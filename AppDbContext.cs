@@ -11,7 +11,6 @@ namespace BookNest.Data
         {
         }
 
-        public DbSet<User> AppUsers { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<UserBook> UserBooks { get; set; }
@@ -20,6 +19,9 @@ namespace BookNest.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Review>()
+                .HasIndex(r => new { r.UserId, r.BookId })
+                .IsUnique();
 
             // Kategoriyi otomatik ekle
             modelBuilder.Entity<Category>().HasData(

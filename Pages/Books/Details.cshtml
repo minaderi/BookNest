@@ -1,0 +1,250 @@
+@page "/Books/Details/{id:int}"
+@model BookNest.Pages.Books.DetailsModel
+
+@{
+    ViewData["Title"] = Model.Book.Title;
+    var pct = (Model.AverageRating / 5 * 100)
+        .ToString("0", System.Globalization.CultureInfo.InvariantCulture);
+}
+
+<style>
+    .details-page {
+        --brown-dark: #382110;
+        --green: #00635D;
+        --line: #D8D8D8;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 1.5rem 0 3rem;
+    }
+
+    .details-breadcrumb { font-size: .88rem; margin-bottom: 1.5rem; }
+    .details-breadcrumb a { color: var(--green); text-decoration: none; }
+    .details-breadcrumb a:hover { text-decoration: underline; }
+
+    .details-cover {
+        width: 100%;
+        max-width: 260px;
+        border-radius: 6px;
+        box-shadow: 0 6px 18px rgba(56, 33, 16, .25);
+    }
+
+    .details-cover-empty {
+        width: 100%;
+        max-width: 260px;
+        aspect-ratio: 2 / 3;
+        border-radius: 6px;
+        background: #fff;
+        border: 1px dashed var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+    }
+
+    .details-title {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 700;
+        font-size: 2.3rem;
+        color: var(--brown-dark);
+        line-height: 1.2;
+        margin-bottom: .4rem;
+    }
+
+    .details-author {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.25rem;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    .details-tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.25rem; }
+
+    .details-tag {
+        background: #fff;
+        border: 1px solid var(--line);
+        color: var(--brown-dark);
+        border-radius: 999px;
+        padding: .2rem .85rem;
+        font-size: .85rem;
+    }
+
+    .details-section-title {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--brown-dark);
+        border-bottom: 1px solid var(--line);
+        padding-bottom: .4rem;
+        margin: 1.5rem 0 .9rem;
+    }
+
+    .details-desc {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.05rem;
+        line-height: 1.75;
+        color: #333;
+        white-space: pre-line;
+    }
+
+    .details-back {
+        display: inline-block;
+        margin-top: 1.5rem;
+        background: var(--green);
+        color: #fff;
+        border-radius: 6px;
+        padding: .5rem 1.4rem;
+        text-decoration: none;
+        font-size: .92rem;
+    }
+    .details-back:hover { background: #004d48; color: #fff; }
+
+    /* Puan alanı */
+    .rating-box { margin-top: 1.25rem; max-width: 260px; text-align: left; }
+    .rating-avg { display: flex; align-items: center; gap: .6rem; }
+
+    .rating-avg .num {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.9rem;
+        font-weight: 700;
+        color: #382110;
+        line-height: 1;
+    }
+
+    .rating-summary { font-size: .85rem; color: #777; margin-top: .25rem; }
+
+    .star { width: 24px; height: 24px; flex: 0 0 24px; fill: currentColor; }
+
+    .stars-static { position: relative; display: inline-flex; color: #dcdcdc; }
+
+    .stars-static .fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        display: flex;
+        overflow: hidden;
+        color: #f5b301;
+    }
+
+    .rate-title {
+        font-size: .85rem;
+        color: #555;
+        margin: 1.1rem 0 .3rem;
+        padding-top: .9rem;
+        border-top: 1px solid #D8D8D8;
+    }
+
+    .star-input { display: inline-flex; flex-direction: row-reverse; }
+
+    .star-input button {
+        background: none;
+        border: 0;
+        padding: 0 1px;
+        color: #dcdcdc;
+        cursor: pointer;
+    }
+
+    .star-input button .star { width: 30px; height: 30px; }
+    .star-input button.on { color: #f5b301; }
+    .star-input:hover button { color: #dcdcdc; }
+    .star-input button:hover,
+    .star-input button:hover ~ button { color: #f5b301; }
+
+    .rate-login { font-size: .88rem; color: #00635D; }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="star" viewBox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </symbol>
+</svg>
+
+<div class="details-page">
+
+    <div class="details-breadcrumb">
+        <a href="/">Ana sayfa</a> &rsaquo; <span>@Model.Book.Title</span>
+    </div>
+
+    <div class="row g-5">
+
+        <div class="col-md-4 text-center text-md-start">
+            @if (!string.IsNullOrWhiteSpace(Model.Book.CoverImageUrl))
+            {
+                <img src="@Model.Book.CoverImageUrl" class="details-cover" alt="@Model.Book.Title" />
+            }
+            else
+            {
+                <div class="details-cover-empty">📖</div>
+            }
+
+            <div class="rating-box">
+                <div class="rating-avg">
+                    <div class="stars-static">
+                        @for (var s = 0; s < 5; s++)
+                        {
+                            <svg class="star"><use href="#star" /></svg>
+                        }
+                        <div class="fill" style="width:@(pct)%">
+                            @for (var s = 0; s < 5; s++)
+                            {
+                                <svg class="star"><use href="#star" /></svg>
+                            }
+                        </div>
+                    </div>
+                    @if (Model.RatingCount > 0)
+                    {
+                        <span class="num">@Model.AverageRating.ToString("0.0")</span>
+                    }
+                </div>
+
+                <div class="rating-summary">
+                    @(Model.RatingCount > 0 ? $"{Model.RatingCount} puan" : "Henüz puan verilmemiş")
+                </div>
+
+                <div class="rate-title">
+                    @(User.Identity?.IsAuthenticated == true ? "Bu kitabı puanla" : "Puan vermek için")
+                </div>
+
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <form method="post" asp-page-handler="Rate" asp-route-id="@Model.Book.Id">
+                        <div class="star-input">
+                            @for (var i = 5; i >= 1; i--)
+                            {
+                                <button type="submit" name="rating" value="@i"
+                                        class="@(Model.MyRating >= i ? "on" : "")"
+                                        title="@i yıldız">
+                                    <svg class="star"><use href="#star" /></svg>
+                                </button>
+                            }
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <a class="rate-login" href="/Identity/Account/Login">Giriş yap</a>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <h1 class="details-title">@Model.Book.Title</h1>
+            <div class="details-author">@Model.Book.Author</div>
+
+            <div class="details-tags">
+                <span class="details-tag">@(Model.Book.Category?.Name ?? "Kategori belirtilmemiş")</span>
+                @if (Model.Book.PublishYear > 0)
+                {
+                    <span class="details-tag">@Model.Book.PublishYear</span>
+                }
+            </div>
+
+            <h2 class="details-section-title">Kitap Özeti</h2>
+            <div class="details-desc">@(string.IsNullOrWhiteSpace(Model.Book.Description)
+                ? "Bu kitap için henüz bir açıklama eklenmemiş."
+                : Model.Book.Description)</div>
+
+            <a href="/" class="details-back">&larr; Ana sayfaya dön</a>
+        </div>
+
+    </div>
+</div>

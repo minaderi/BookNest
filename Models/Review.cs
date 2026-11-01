@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-
+using Microsoft.AspNetCore.Identity;
 namespace BookNest.Models
 {
     public class Review
@@ -7,8 +7,8 @@ namespace BookNest.Models
         [Key]
         public int Id { get; set; }
 
-        public int UserId { get; set; }
-        public User User { get; set; }
+        public string UserId { get; set; }
+        public IdentityUser User { get; set; }
 
         public int BookId { get; set; }
         public Book Book { get; set; }

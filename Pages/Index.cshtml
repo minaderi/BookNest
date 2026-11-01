@@ -28,8 +28,11 @@
                             {
                                 <span class="badge bg-secondary mb-3 align-self-start">@book.Category.Name</span>
                             }
-                            <a href="#" class="btn btn-outline-dark mt-auto btn-sm">Detayları Gör</a>
-                        </div>
+                            <a asp-page="/Books/Details" asp-route-id="@book.Id"
+   class="btn btn-outline-dark mt-auto btn-sm">
+    Detayları Gör
+</a>
+                      </div>
                     </div>
                 </div>
             }

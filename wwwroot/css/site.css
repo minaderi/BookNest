@@ -29,3 +29,43 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+body {
+    background-color: #F4F1EA;
+}
+/* Goodreads tarzı üst menü */
+.navbar {
+    background-color: #F4F1EA !important;
+    border-bottom: 1px solid #D8D8D8 !important;
+    box-shadow: none !important;
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+}
+
+.navbar-brand {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -.5px;
+    color: #382110 !important;
+}
+
+.navbar .nav-link {
+    color: #382110 !important;
+    font-size: .95rem;
+    padding-left: .9rem;
+    padding-right: .9rem;
+}
+
+.navbar .nav-link:hover {
+    color: #00635D !important;
+    text-decoration: underline;
+}
+.navbar .user-name {
+    font-weight: 600;
+}
+
+.navbar .logout-btn {
+    background: none;
+    border: 0;
+    cursor: pointer;
+}

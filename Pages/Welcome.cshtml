@@ -1,0 +1,284 @@
+@page "/Welcome"
+@model BookNest.Pages.WelcomeModel
+@{
+    ViewData["Title"] = "BookNest'e Hoş Geldin";
+    var rots = new[] { -7, 0, 7 };
+    var isAuth = User.Identity?.IsAuthenticated == true;
+}
+
+<style>
+    .welcome-page {
+        --brown-dark: #382110;
+        --green: #00635D;
+        --line: #D8D8D8;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 1rem 0 3rem;
+    }
+
+    .welcome-hero {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        align-items: center;
+        gap: 2.5rem;
+        padding: 2.5rem 0 3rem;
+    }
+
+    .welcome-hero h1 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 3rem;
+        font-weight: 700;
+        line-height: 1.15;
+        color: var(--brown-dark);
+        margin-bottom: 1rem;
+    }
+
+    .welcome-hero p.lead {
+        font-size: 1.15rem;
+        color: #555;
+        margin-bottom: 1.75rem;
+    }
+
+    .welcome-btn {
+        display: inline-block;
+        padding: .75rem 1.9rem;
+        border-radius: 999px;
+        font-size: 1rem;
+        text-decoration: none;
+        margin-right: .6rem;
+        margin-bottom: .6rem;
+    }
+
+    .welcome-btn.primary {
+        background: var(--green);
+        color: #fff;
+        border: 1px solid var(--green);
+    }
+
+    .welcome-btn.primary:hover { background: #004d48; color: #fff; }
+
+    .welcome-btn.ghost {
+        background: transparent;
+        color: var(--brown-dark);
+        border: 1px solid var(--brown-dark);
+    }
+
+    .welcome-btn.ghost:hover { background: var(--brown-dark); color: #fff; }
+
+    .welcome-stats {
+        margin-top: 1rem;
+        font-size: .9rem;
+        color: #777;
+    }
+
+    .welcome-stack {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem 0;
+    }
+
+    .welcome-stack .stack-item {
+        width: 31%;
+        max-width: 170px;
+        margin: 0 -2%;
+    }
+
+    .welcome-stack img,
+    .stack-empty {
+        width: 100%;
+        aspect-ratio: 2 / 3;
+        object-fit: cover;
+        border-radius: 6px;
+        box-shadow: 0 8px 22px rgba(56, 33, 16, .3);
+        background: #fff;
+    }
+
+    .stack-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+    }
+
+    .welcome-section-title {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--brown-dark);
+        border-bottom: 1px solid var(--line);
+        padding-bottom: .5rem;
+        margin: 1rem 0 1.5rem;
+    }
+
+    .welcome-books {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .welcome-book {
+        text-decoration: none;
+        color: inherit;
+        text-align: center;
+    }
+
+    .welcome-book img,
+    .welcome-book .stack-empty {
+        box-shadow: 0 4px 12px rgba(56, 33, 16, .22);
+        transition: transform .15s ease;
+    }
+
+    .welcome-book:hover img { transform: translateY(-4px); }
+
+    .welcome-book .t {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 700;
+        color: var(--brown-dark);
+        margin-top: .6rem;
+        font-size: .95rem;
+        line-height: 1.25;
+    }
+
+    .welcome-book .a {
+        font-size: .82rem;
+        color: #777;
+    }
+
+    .welcome-features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+        margin: 3rem 0 2rem;
+    }
+
+    .feature-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .feature-card .ic { font-size: 2rem; margin-bottom: .5rem; }
+
+    .feature-card h3 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--brown-dark);
+    }
+
+    .feature-card p { font-size: .92rem; color: #666; margin-bottom: 0; }
+
+    .soon {
+        display: inline-block;
+        font-size: .7rem;
+        background: #F4F1EA;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0 .5rem;
+        margin-left: .3rem;
+        vertical-align: middle;
+        color: #777;
+    }
+
+    .welcome-cta {
+        text-align: center;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 2.5rem 1rem;
+        margin-top: 2.5rem;
+    }
+
+    .welcome-cta h2 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 700;
+        color: var(--brown-dark);
+        margin-bottom: 1.25rem;
+    }
+
+    @@media (max-width: 767px) {
+        .welcome-hero { grid-template-columns: 1fr; text-align: center; }
+        .welcome-hero h1 { font-size: 2.2rem; }
+        .welcome-features { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="welcome-page">
+
+    <section class="welcome-hero">
+        <div>
+            <h1>Sıradaki kitabına karar ver.</h1>
+            <p class="lead">
+                BookNest'te kitapları keşfet, puan ver ve okuma alışkanlıklarını
+                tek bir yerde topla.
+            </p>
+
+            @if (isAuth)
+            {
+                <a class="welcome-btn primary" href="/">Kitapları keşfet</a>
+            }
+            else
+            {
+                <a class="welcome-btn primary" href="/Identity/Account/Register">Ücretsiz kayıt ol</a>
+                <a class="welcome-btn ghost" href="/Identity/Account/Login">Giriş yap</a>
+            }
+
+            <div class="welcome-stats">
+                @Model.BookCount kitap · @Model.RatingCount puan
+            </div>
+        </div>
+
+        <div class="welcome-stack">
+            @for (var i = 0; i < 3; i++)
+            {
+                <div class="stack-item" style="transform: rotate(@(rots[i])deg);">
+                    @if (i < Model.FeaturedBooks.Count && !string.IsNullOrWhiteSpace(Model.FeaturedBooks[i].CoverImageUrl))
+                    {
+                        <img src="@Model.FeaturedBooks[i].CoverImageUrl" alt="@Model.FeaturedBooks[i].Title" />
+                    }
+                    else
+                    {
+                        <div class="stack-empty">📖</div>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+    @if (Model.FeaturedBooks.Any())
+    {
+        <h2 class="welcome-section-title">Yeni eklenen kitaplar</h2>
+
+        <div class="welcome-books">
+            @foreach (var b in Model.FeaturedBooks)
+            {
+                <a class="welcome-book" asp-page="/Books/Details" asp-route-id="@b.Id">
+                    @if (!string.IsNullOrWhiteSpace(b.CoverImageUrl))
+                    {
+                        <img src="@b.CoverImageUrl" alt="@b.Title" style="width:100%; aspect-ratio:2/3; object-fit:cover; border-radius:6px;" />
+                    }
+                    else
+                    {
+                        <div class="stack-empty">📖</div>
+                    }
+                    <div class="t">@b.Title</div>
+                    <div class="a">@b.Author</div>
+                </a>
+            }
+        </div>
+    }
+
+    
+
+    @if (!isAuth)
+    {
+        <section class="welcome-cta">
+            <h2>Okuyucu topluluğuna katıl</h2>
+            <a class="welcome-btn primary" href="/Identity/Account/Register">Ücretsiz kayıt ol</a>
+        </section>
+    }
+
+</div>

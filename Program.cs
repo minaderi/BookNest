@@ -32,27 +32,20 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddControllers(); // Flutter uygulaması için /api/... adresleri
+
+// Flutter'ı Chrome'da çalıştırırsan farklı bir porttan istek atar, ona izin ver
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FlutterApp", policy =>
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
 builder.Services.AddHttpClient<GoogleBooksService>();
 
 var app = builder.Build();
 
-// Admin rolünü oluştur ve AdminEmail ayarındaki kullanıcıya ata
-using (var scope = app.Services.CreateScope())
-{
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-    if (!await roleManager.RoleExistsAsync("Admin"))
-        await roleManager.CreateAsync(new IdentityRole("Admin"));
-
-    var adminEmail = app.Configuration["AdminEmail"];
-    if (!string.IsNullOrEmpty(adminEmail))
-    {
-        var adminUser = await userManager.FindByEmailAsync(adminEmail);
-        if (adminUser != null && !await userManager.IsInRoleAsync(adminUser, "Admin"))
-            await userManager.AddToRoleAsync(adminUser, "Admin");
-    }
-}
+// Veritabanını hazırla: tablolar, admin hesabı ve kitaplar.json'daki kitaplar
+await VeritabaniHazirlik.HazirlaAsync(app);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -61,7 +54,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// /api isteklerini HTTPS'e yönlendirme: emülatör localhost sertifikasına güvenmez
+app.UseWhen(
+    context => !context.Request.Path.StartsWithSegments("/api"),
+    branch => branch.UseHttpsRedirection());
+
+app.UseCors("FlutterApp");
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -70,5 +68,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
-
+app.MapControllers();
 app.Run();

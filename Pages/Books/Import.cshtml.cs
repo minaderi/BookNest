@@ -13,11 +13,13 @@ namespace BookNest.Pages.Books
     {
         private readonly GoogleBooksService _googleBooks;
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env; // proje klasörünün yolunu bulmak için
 
-        public ImportModel(GoogleBooksService googleBooks, AppDbContext context)
+               public ImportModel(GoogleBooksService googleBooks, AppDbContext context, IWebHostEnvironment env)
         {
             _googleBooks = googleBooks;
             _context = context;
+            _env = env;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -70,6 +72,12 @@ namespace BookNest.Pages.Books
             });
 
             await _context.SaveChangesAsync();
+            
+
+            // Ekibin geri kalanı da bu kitabı alsın diye kitaplar.json'u güncelle
+            await KitapDosyasi.YazAsync(_context, _env.ContentRootPath);
+
+          
 
             Message = $"\"{title}\" eklendi.";
             return RedirectToPage(new { Q });

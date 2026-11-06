@@ -1,0 +1,50 @@
+[
+  {
+    "Title": "Black Bag",
+    "Author": "Luke Kennard",
+    "Description": "Booker Shortlist 2026 Adayı",
+    "CoverImageUrl": "/images/black-bag.jpg",
+    "PublishYear": 2026,
+    "Category": "Fiction"
+  },
+  {
+    "Title": "Suç ve Ceza",
+    "Author": "Fyodor Dostoyevski ",
+    "Description": "“Hemen şimdi bir şeyler yapmak gerek,” diye söylenir Raskolnikov. “Ne olursa olsun bir şeyler yapmak için karar vermek ya da büsbütün yaşamaktan vazgeçmek...” Yoksul ve onurlu Raskolnikov’un tavan arasındaki öğrenci odasında yaşadığı ikilem ve sonrasında tasarladığı cinayet Rusya’da bir fırtınanın kopmasına neden olmuştu. Suç ve Ceza farklı dillere çevrildiğinde, yazarı Dostoyevski’yi dünya edebiyatının zirvesine taşıdı. Yüz elli yıllık bu başyapıt hâlâ en çok sevilen ve en çok okunan romanlar arasında. Çünkü zaman, Suç ve Ceza’nın ele aldığı meseleleri eskitemedi. İyi ile kötü arasındaki savaş bugün de sürüyor ve bir zamanlar Raskolnikov’un yaptığı gibi, modern dünyada insan olmanın anlamı ve eylemlerimizin ahlaki sonuçları üzerinde düşünmeyi sürdürüyoruz. Sözüm ona yüce bir amaç uğruna her türlü fenalığı, en ufak bir pişmanlık duymadan yapmaya hazır olanları gördükçe sahici bir yüzleşmenin değerini bir kez daha kavrıyoruz. Yordam Edebiyat, Suç ve Ceza’yı usta çevirmen Hasan Âli Ediz’in Rusça aslından yaptığı çeviriyle sunuyor.",
+    "CoverImageUrl": "https://books.google.com/books/content?id=BFl9DwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
+    "PublishYear": 2019,
+    "Category": "Fiction"
+  },
+  {
+    "Title": "The Disappearers",
+    "Author": "Marlon James",
+    "Description": "Booker Shortlist 2026 Adayı",
+    "CoverImageUrl": "/images/disappearers.jpg",
+    "PublishYear": 2026,
+    "Category": "Fiction"
+  },
+  {
+    "Title": "The End of Everything",
+    "Author": "M. John Harrison",
+    "Description": "Booker Shortlist 2026 Adayı",
+    "CoverImageUrl": "/images/end-of-everything.jpg",
+    "PublishYear": 2026,
+    "Category": "Fiction"
+  },
+  {
+    "Title": "The Winds of Dune",
+    "Author": "Kevin J. Anderson, Brian Herbert",
+    "Description": "Between the end of Frank Herbert's DUNE and his next novel, DUNE MESSIAH, lies an intriguing mystery: how a hero adored by a planet became a tyrant hated by a universe. Paul Atreides is the man who overthrew a corrupt empire and then launched a terrible jihad across the galaxy, shedding the blood of trillions. The now-hated tyrant, the blind emperor Paul Muad'Dib, has walked off into the endless desert of the planet Arrakis, known as Dune, leaving his turbulent empire without guidance. It's up to his mother Jessica, with her daughter Alia, the brave troubadour-warrior Gurney Halleck, the resurrected Duncan Idaho, the Fremen leader Stilgar, as well as Paul's wife-in-name and biographer, Princess Irulan, to try and hold an empire together even as it tears itself apart from within and without.",
+    "CoverImageUrl": "https://books.google.com/books/content?id=BpgkiOdga5IC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
+    "PublishYear": 2009,
+    "Category": "Fiction"
+  },
+  {
+    "Title": "Tutunamayanlar",
+    "Author": "Oğuz Atay",
+    "Description": "",
+    "CoverImageUrl": "https://books.google.com/books/content?id=fv4HAQAAMAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "PublishYear": 1993,
+    "Category": "Authors, Turkish"
+  }
+]

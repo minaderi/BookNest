@@ -15,6 +15,7 @@ namespace BookNest.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<UserBook> UserBooks { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<ReviewLike> ReviewLikes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +23,26 @@ namespace BookNest.Data
             modelBuilder.Entity<Review>()
                 .HasIndex(r => new { r.UserId, r.BookId })
                 .IsUnique();
+
+            // Yorum beğenileri: bir kullanıcı bir yorumu en fazla bir kez beğenebilir
+            modelBuilder.Entity<ReviewLike>()
+                .HasIndex(l => new { l.ReviewId, l.UserId })
+                .IsUnique();
+
+            // Yorum silinirse beğenileri de silinir
+            modelBuilder.Entity<ReviewLike>()
+                .HasOne(l => l.Review)
+                .WithMany()
+                .HasForeignKey(l => l.ReviewId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // SQL Server aynı tabloya iki ayrı silme zinciri kabul etmediği için
+            // kullanıcı tarafında otomatik silme kapalı
+            modelBuilder.Entity<ReviewLike>()
+                .HasOne(l => l.User)
+                .WithMany()
+                .HasForeignKey(l => l.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             // Kategoriyi otomatik ekle
             modelBuilder.Entity<Category>().HasData(

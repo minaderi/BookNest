@@ -32,7 +32,9 @@ namespace BookNest.Pages.Books
         public string? MyComment { get; set; }
         public List<YorumSatiri> Yorumlar { get; set; } = new();
 
-        public record YorumSatiri(string KullaniciAdi, int Puan, string Yorum, bool BenimMi);
+        public record YorumSatiri(
+            int Id, string KullaniciAdi, int Puan, string Yorum,
+            bool BenimMi, int BegeniSayisi, bool BenBegendim);
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -194,6 +196,12 @@ namespace BookNest.Pages.Books
                 metin = metin.Substring(0, YorumMaxUzunluk);
 
             review.Comment = metin;
+
+            // Yorum boş kaydedilirse silinmiş sayılır, beğenileri de gider
+            if (metin == "")
+                _context.ReviewLikes.RemoveRange(
+                    _context.ReviewLikes.Where(l => l.ReviewId == review.Id));
+
             await _context.SaveChangesAsync();
             return RedirectToPage(null, null, new { id }, "reviews");
         }
@@ -214,10 +222,44 @@ namespace BookNest.Pages.Books
             if (review != null)
             {
                 review.Comment = "";
+
+                // Yorum silinince beğenileri de silinsin
+                var begeniler = _context.ReviewLikes.Where(l => l.ReviewId == review.Id);
+                _context.ReviewLikes.RemoveRange(begeniler);
+
                 await _context.SaveChangesAsync();
             }
 
             return RedirectToPage(null, null, new { id }, "reviews");
+        }
+
+        // Bir yorumu beğenir ya da beğeniyi geri alır
+        public async Task<IActionResult> OnPostLikeAsync(int id, int reviewId)
+        {
+            if (User.Identity?.IsAuthenticated != true)
+                return Challenge();
+
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+                return Challenge();
+
+            var review = await _context.Reviews
+                .FirstOrDefaultAsync(r => r.Id == reviewId && r.BookId == id);
+
+            // Yorum yoksa ya da kendi yorumuysa bir şey yapma
+            if (review == null || review.Comment == "" || review.UserId == userId)
+                return RedirectToPage(null, null, new { id }, "reviews");
+
+            var begeni = await _context.ReviewLikes
+                .FirstOrDefaultAsync(l => l.ReviewId == reviewId && l.UserId == userId);
+
+            if (begeni == null)
+                _context.ReviewLikes.Add(new ReviewLike { ReviewId = reviewId, UserId = userId });
+            else
+                _context.ReviewLikes.Remove(begeni);
+
+            await _context.SaveChangesAsync();
+            return RedirectToPage(null, null, new { id }, $"review-{reviewId}");
         }
 
         private async Task<bool> LoadAsync(int id)
@@ -244,12 +286,23 @@ namespace BookNest.Pages.Books
                 .AsNoTracking()
                 .Where(r => r.BookId == id && r.Comment != "")
                 .OrderByDescending(r => r.Id)
-                .Select(r => new { r.UserId, r.User.UserName, r.Rating, r.Comment })
+                .Select(r => new
+                {
+                    r.Id,
+                    r.UserId,
+                    r.User.UserName,
+                    r.Rating,
+                    r.Comment,
+                    BegeniSayisi = _context.ReviewLikes.Count(l => l.ReviewId == r.Id),
+                    BenBegendim = benimId != null
+                        && _context.ReviewLikes.Any(l => l.ReviewId == r.Id && l.UserId == benimId)
+                })
                 .ToListAsync();
 
             Yorumlar = yorumlar
                 .Select(r => new YorumSatiri(
-                    r.UserName ?? "Unknown", r.Rating, r.Comment, r.UserId == benimId))
+                    r.Id, r.UserName ?? "Unknown", r.Rating, r.Comment,
+                    r.UserId == benimId, r.BegeniSayisi, r.BenBegendim))
                 .ToList();
 
             if (User.Identity?.IsAuthenticated == true)

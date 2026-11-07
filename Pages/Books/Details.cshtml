@@ -265,6 +265,22 @@
         line-height: 1.65;
         white-space: pre-line;
     }
+
+    .review-like { display: flex; align-items: center; gap: .7rem; margin-top: .6rem; }
+
+    .like-btn {
+        background: #fff;
+        border: 1px solid var(--line);
+        color: var(--brown-dark);
+        border-radius: 999px;
+        padding: .2rem .9rem;
+        font-size: .82rem;
+        cursor: pointer;
+    }
+    .like-btn:hover { border-color: var(--green); }
+    .like-btn.on { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+
+    .like-count { font-size: .82rem; color: #777; }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -424,7 +440,7 @@
                 }
                 @foreach (var y in Model.Yorumlar)
                 {
-                    <div class="review-item">
+                    <div class="review-item" id="review-@y.Id">
                         <div class="review-head">
                             <span class="review-user">@y.KullaniciAdi</span>
                             @if (y.BenimMi)
@@ -449,6 +465,22 @@
                             }
                         </div>
                         <div class="review-text">@y.Yorum</div>
+
+                        <div class="review-like">
+                            @if (User.Identity?.IsAuthenticated == true && !y.BenimMi)
+                            {
+                                <form method="post" asp-page-handler="Like" asp-route-id="@Model.Book.Id">
+                                    <input type="hidden" name="reviewId" value="@y.Id" />
+                                    <button type="submit" class="like-btn @(y.BenBegendim ? "on" : "")">
+                                        @(y.BenBegendim ? "Liked" : "Like")
+                                    </button>
+                                </form>
+                            }
+                            @if (y.BegeniSayisi > 0)
+                            {
+                                <span class="like-count">@(y.BegeniSayisi == 1 ? "1 like" : $"{y.BegeniSayisi} likes")</span>
+                            }
+                        </div>
                     </div>
                 }
             </div>

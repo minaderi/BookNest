@@ -16,6 +16,7 @@ namespace BookNest.Data
         public DbSet<UserBook> UserBooks { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<ReviewLike> ReviewLikes { get; set; }
+        public DbSet<ReviewReply> ReviewReplies { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,6 +44,24 @@ namespace BookNest.Data
                 .WithMany()
                 .HasForeignKey(l => l.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            // Yorum yanıtları: yorum silinirse yanıtları da silinir
+            modelBuilder.Entity<ReviewReply>()
+                .HasOne(r => r.Review)
+                .WithMany()
+                .HasForeignKey(r => r.ReviewId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Beğenilerdeki gibi, kullanıcı tarafında otomatik silme kapalı
+            modelBuilder.Entity<ReviewReply>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ReviewReply>()
+                .Property(r => r.Text)
+                .HasMaxLength(1000);
 
             // Kategoriyi otomatik ekle
             modelBuilder.Entity<Category>().HasData(

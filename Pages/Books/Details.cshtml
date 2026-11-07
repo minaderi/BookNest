@@ -281,6 +281,48 @@
     .like-btn.on { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
 
     .like-count { font-size: .82rem; color: #777; }
+
+    /* Yanıtlar */
+    .reply-list {
+        margin: .8rem 0 0 1.25rem;
+        padding-left: 1rem;
+        border-left: 2px solid var(--line);
+    }
+
+    .reply-item { padding: .5rem 0; }
+    .reply-head { display: flex; align-items: center; gap: .6rem; }
+    .reply-user { font-weight: 700; color: var(--brown-dark); font-size: .9rem; }
+    .reply-date { font-size: .78rem; color: #999; }
+
+    .reply-delete {
+        background: none;
+        border: 0;
+        padding: 0;
+        color: #c0392b;
+        font-size: .8rem;
+        cursor: pointer;
+    }
+    .reply-delete:hover { text-decoration: underline; }
+
+    .reply-text {
+        font-family: Georgia, "Times New Roman", serif;
+        color: #333;
+        font-size: .95rem;
+        line-height: 1.6;
+        white-space: pre-line;
+    }
+
+    .reply-form { margin: .8rem 0 0 1.25rem; }
+    .reply-form textarea {
+        width: 100%;
+        min-height: 70px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: .5rem .7rem;
+        font-size: .9rem;
+        resize: vertical;
+    }
+    .reply-form textarea:focus { outline: none; border-color: var(--green); }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -476,11 +518,57 @@
                                     </button>
                                 </form>
                             }
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <button type="button" class="like-btn" onclick="yanitFormu(@y.Id, true)">Reply</button>
+                            }
                             @if (y.BegeniSayisi > 0)
                             {
                                 <span class="like-count">@(y.BegeniSayisi == 1 ? "1 like" : $"{y.BegeniSayisi} likes")</span>
                             }
+                            @if (y.Yanitlar.Count > 0)
+                            {
+                                <span class="like-count">@(y.Yanitlar.Count == 1 ? "1 reply" : $"{y.Yanitlar.Count} replies")</span>
+                            }
                         </div>
+
+                        @if (y.Yanitlar.Any())
+                        {
+                            <div class="reply-list">
+                                @foreach (var yanit in y.Yanitlar)
+                                {
+                                    <div class="reply-item">
+                                        <div class="reply-head">
+                                            <span class="reply-user">@yanit.KullaniciAdi</span>
+                                            <span class="reply-date">@yanit.Tarih.ToString("MMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture)</span>
+                                            @if (yanit.BenimMi)
+                                            {
+                                                <form method="post" asp-page-handler="DeleteReply" asp-route-id="@Model.Book.Id"
+                                                      onsubmit="return confirm('Delete your reply?');" style="margin-left:auto">
+                                                    <input type="hidden" name="replyId" value="@yanit.Id" />
+                                                    <button type="submit" class="reply-delete">Delete</button>
+                                                </form>
+                                            }
+                                        </div>
+                                        <div class="reply-text">@yanit.Metin</div>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <form method="post" asp-page-handler="Reply" asp-route-id="@Model.Book.Id"
+                                  class="reply-form" id="reply-form-@y.Id" style="display:none">
+                                <input type="hidden" name="reviewId" value="@y.Id" />
+                                <textarea name="replyText" maxlength="@BookNest.Pages.Books.DetailsModel.YanitMaxUzunluk"
+                                          placeholder="Write a reply..."></textarea>
+                                <div class="review-actions">
+                                    <button type="submit" class="review-btn">Reply</button>
+                                    <button type="button" class="review-cancel" onclick="yanitFormu(@y.Id, false)">Cancel</button>
+                                </div>
+                            </form>
+                        }
                     </div>
                 }
             </div>
@@ -501,6 +589,18 @@
             var kutu = document.getElementById('review-text');
             kutu.focus();
             kutu.setSelectionRange(kutu.value.length, kutu.value.length);
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    // Reply butonuna basınca o yorumun yanıt kutusunu açar, Cancel'a basınca kapatır
+    function yanitFormu(yorumId, ac) {
+        var form = document.getElementById('reply-form-' + yorumId);
+        if (!form) return;
+        form.style.display = ac ? '' : 'none';
+        if (ac) {
+            var kutu = form.querySelector('textarea');
+            kutu.focus();
             form.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }

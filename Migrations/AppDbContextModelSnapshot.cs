@@ -175,6 +175,38 @@ namespace BookNest.Migrations
                     b.ToTable("ReviewLikes");
                 });
 
+            modelBuilder.Entity("BookNest.Models.ReviewReply", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ReviewId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReviewId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ReviewReplies");
+                });
+
             modelBuilder.Entity("BookNest.Models.UserBook", b =>
                 {
                     b.Property<int>("Id")
@@ -443,6 +475,25 @@ namespace BookNest.Migrations
                 });
 
             modelBuilder.Entity("BookNest.Models.ReviewLike", b =>
+                {
+                    b.HasOne("BookNest.Models.Review", "Review")
+                        .WithMany()
+                        .HasForeignKey("ReviewId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Review");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BookNest.Models.ReviewReply", b =>
                 {
                     b.HasOne("BookNest.Models.Review", "Review")
                         .WithMany()

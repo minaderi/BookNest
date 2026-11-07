@@ -34,7 +34,14 @@ namespace BookNest.Pages.Books
 
         public record YorumSatiri(
             int Id, string KullaniciAdi, int Puan, string Yorum,
-            bool BenimMi, int BegeniSayisi, bool BenBegendim);
+            bool BenimMi, int BegeniSayisi, bool BenBegendim,
+            List<YanitSatiri> Yanitlar);
+
+        // Yanıtlar
+        public const int YanitMaxUzunluk = 1000;
+
+        public record YanitSatiri(
+            int Id, string KullaniciAdi, string Metin, DateTime Tarih, bool BenimMi);
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -197,10 +204,14 @@ namespace BookNest.Pages.Books
 
             review.Comment = metin;
 
-            // Yorum boş kaydedilirse silinmiş sayılır, beğenileri de gider
+            // Yorum boş kaydedilirse silinmiş sayılır, beğenileri ve yanıtları da gider
             if (metin == "")
+            {
                 _context.ReviewLikes.RemoveRange(
                     _context.ReviewLikes.Where(l => l.ReviewId == review.Id));
+                _context.ReviewReplies.RemoveRange(
+                    _context.ReviewReplies.Where(y => y.ReviewId == review.Id));
+            }
 
             await _context.SaveChangesAsync();
             return RedirectToPage(null, null, new { id }, "reviews");
@@ -223,9 +234,11 @@ namespace BookNest.Pages.Books
             {
                 review.Comment = "";
 
-                // Yorum silinince beğenileri de silinsin
-                var begeniler = _context.ReviewLikes.Where(l => l.ReviewId == review.Id);
-                _context.ReviewLikes.RemoveRange(begeniler);
+                // Yorum silinince beğenileri ve yanıtları da silinsin
+                _context.ReviewLikes.RemoveRange(
+                    _context.ReviewLikes.Where(l => l.ReviewId == review.Id));
+                _context.ReviewReplies.RemoveRange(
+                    _context.ReviewReplies.Where(y => y.ReviewId == review.Id));
 
                 await _context.SaveChangesAsync();
             }
@@ -259,6 +272,62 @@ namespace BookNest.Pages.Books
                 _context.ReviewLikes.Remove(begeni);
 
             await _context.SaveChangesAsync();
+            return RedirectToPage(null, null, new { id }, $"review-{reviewId}");
+        }
+
+        // Bir yoruma yanıt yazar
+        public async Task<IActionResult> OnPostReplyAsync(int id, int reviewId, string? replyText)
+        {
+            if (User.Identity?.IsAuthenticated != true)
+                return Challenge();
+
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+                return Challenge();
+
+            var yorumVarMi = await _context.Reviews
+                .AnyAsync(r => r.Id == reviewId && r.BookId == id && r.Comment != "");
+
+            var metin = (replyText ?? "").Trim();
+
+            if (yorumVarMi && metin != "")
+            {
+                if (metin.Length > YanitMaxUzunluk)
+                    metin = metin.Substring(0, YanitMaxUzunluk);
+
+                _context.ReviewReplies.Add(new ReviewReply
+                {
+                    ReviewId = reviewId,
+                    UserId = userId,
+                    Text = metin,
+                    CreatedAt = DateTime.Now
+                });
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToPage(null, null, new { id }, $"review-{reviewId}");
+        }
+
+        // Kullanıcının kendi yanıtını siler
+        public async Task<IActionResult> OnPostDeleteReplyAsync(int id, int replyId)
+        {
+            if (User.Identity?.IsAuthenticated != true)
+                return Challenge();
+
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+                return Challenge();
+
+            var yanit = await _context.ReviewReplies
+                .FirstOrDefaultAsync(y => y.Id == replyId && y.UserId == userId);
+
+            if (yanit == null)
+                return RedirectToPage(null, null, new { id }, "reviews");
+
+            var reviewId = yanit.ReviewId;
+            _context.ReviewReplies.Remove(yanit);
+            await _context.SaveChangesAsync();
+
             return RedirectToPage(null, null, new { id }, $"review-{reviewId}");
         }
 
@@ -299,10 +368,24 @@ namespace BookNest.Pages.Books
                 })
                 .ToListAsync();
 
+            // Bu yorumlara gelen yanıtlar, eskiden yeniye
+            var yorumIdleri = yorumlar.Select(r => r.Id).ToList();
+            var yanitlar = await _context.ReviewReplies
+                .AsNoTracking()
+                .Where(y => yorumIdleri.Contains(y.ReviewId))
+                .OrderBy(y => y.CreatedAt)
+                .Select(y => new { y.Id, y.ReviewId, y.UserId, y.User.UserName, y.Text, y.CreatedAt })
+                .ToListAsync();
+
             Yorumlar = yorumlar
                 .Select(r => new YorumSatiri(
                     r.Id, r.UserName ?? "Unknown", r.Rating, r.Comment,
-                    r.UserId == benimId, r.BegeniSayisi, r.BenBegendim))
+                    r.UserId == benimId, r.BegeniSayisi, r.BenBegendim,
+                    yanitlar
+                        .Where(y => y.ReviewId == r.Id)
+                        .Select(y => new YanitSatiri(
+                            y.Id, y.UserName ?? "Unknown", y.Text, y.CreatedAt, y.UserId == benimId))
+                        .ToList()))
                 .ToList();
 
             if (User.Identity?.IsAuthenticated == true)

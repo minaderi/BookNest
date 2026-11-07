@@ -43,11 +43,11 @@ namespace BookNest.Areas.Identity.Pages.Account
         {
             // Alan adı Login.cshtml ile uyumlu kalsın diye "Email" olarak bırakıldı.
             // İçine e-posta ya da kullanıcı adı yazılabilir.
-            [Required(ErrorMessage = "E-posta veya kullanıcı adı gerekli.")]
-            [Display(Name = "E-posta veya kullanıcı adı")]
+            [Required(ErrorMessage = "Email or username is required.")]
+            [Display(Name = "Email or username")]
             public string Email { get; set; }
 
-            [Required(ErrorMessage = "Şifre gerekli.")]
+            [Required(ErrorMessage = "Password is required.")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
@@ -88,7 +88,7 @@ namespace BookNest.Areas.Identity.Pages.Account
 
                 if (user == null)
                 {
-                    ModelState.AddModelError(string.Empty, "E-posta/kullanıcı adı veya şifre hatalı.");
+                    ModelState.AddModelError(string.Empty, "Invalid email/username or password.");
                     return Page();
                 }
 
@@ -110,7 +110,7 @@ namespace BookNest.Areas.Identity.Pages.Account
                     return RedirectToPage("./Lockout");
                 }
 
-                ModelState.AddModelError(string.Empty, "E-posta/kullanıcı adı veya şifre hatalı.");
+                ModelState.AddModelError(string.Empty, "Invalid email/username or password.");
                 return Page();
             }
 

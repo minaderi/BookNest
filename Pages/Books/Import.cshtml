@@ -1,7 +1,7 @@
 @page
 @model BookNest.Pages.Books.ImportModel
 @{
-    ViewData["Title"] = "Kitap Ekle";
+    ViewData["Title"] = "Add Book";
 }
 
 <style>
@@ -99,7 +99,7 @@ s
         align-items: center;
         justify-content: center;
         color: var(--brown-mid);
-        font-size: 2rem;
+        font-size: .8rem;
     }
 
     .import-info {
@@ -173,8 +173,8 @@ s
 <div class="import-page @(string.IsNullOrWhiteSpace(Model.Q) ? "import-landing" : "")">
 
     <div class="import-hero">
-        <h1>Kitap Ekle</h1>
-        <p>Google Books'ta ara, beğendiğin kitabı kütüphaneye ekle.</p>
+        <h1>Add Book</h1>
+        <p>Search Google Books and add a book to the library.</p>
     </div>
 
     @if (!string.IsNullOrEmpty(Model.Message))
@@ -187,28 +187,26 @@ s
     <form method="get" class="import-search">
         <div class="input-group">
             <input type="text" name="Q" value="@Model.Q" class="form-control"
-                   placeholder="Kitap adı veya yazar ara..." autofocus />
-            <button type="submit" class="btn">Ara</button>
+                   placeholder="Search by title or author..." autofocus />
+            <button type="submit" class="btn">Search</button>
         </div>
     </form>
 
     @if (string.IsNullOrWhiteSpace(Model.Q))
     {
         <div class="import-empty">
-            <div class="big">📚</div>
-            <p>Bir kitap adı ya da yazar yazarak aramaya başla.</p>
+            <p>Start by typing a book title or an author.</p>
         </div>
     }
     else if (!Model.Results.Any())
     {
         <div class="import-empty">
-            <div class="big">🔍</div>
-            <p>"@Model.Q" için sonuç bulunamadı. Farklı bir yazımla tekrar dene.</p>
+            <p>No results found for "@Model.Q". Try a different spelling.</p>
         </div>
     }
     else
     {
-        <p class="text-muted mb-3">@Model.Results.Count sonuç bulundu</p>
+        <p class="text-muted mb-3">@(Model.Results.Count == 1 ? "1 result" : $"{Model.Results.Count} results") found</p>
 
         <div class="row row-cols-1 row-cols-lg-2 g-4">
             @foreach (var book in Model.Results)
@@ -222,13 +220,13 @@ s
                         }
                         else
                         {
-                            <div class="import-cover-empty">📖</div>
+                            <div class="import-cover-empty">No cover</div>
                         }
 
                         <div class="import-info">
                             <h5>@book.Title</h5>
                             <div class="import-meta">
-                                @(string.IsNullOrWhiteSpace(book.Author) ? "Yazar bilinmiyor" : book.Author)
+                                @(string.IsNullOrWhiteSpace(book.Author) ? "Unknown author" : book.Author)
                                 @(book.PublishYear > 0 ? $" · {book.PublishYear}" : "")
                             </div>
 
@@ -238,7 +236,7 @@ s
                             }
 
                             <div class="import-desc">
-                                @(string.IsNullOrWhiteSpace(book.Description) ? "Özet bulunamadı." : book.Description)
+                                @(string.IsNullOrWhiteSpace(book.Description) ? "No description available." : book.Description)
                             </div>
 
                             <form method="post" asp-page-handler="Add">
@@ -249,7 +247,7 @@ s
                                 <input type="hidden" name="publishYear" value="@book.PublishYear" />
                                 <input type="hidden" name="category" value="@book.Category" />
                                 <input type="hidden" name="Q" value="@Model.Q" />
-                                <button type="submit" class="import-add">Kütüphaneye Ekle</button>
+                                <button type="submit" class="import-add">Add to Library</button>
                             </form>
                         </div>
 

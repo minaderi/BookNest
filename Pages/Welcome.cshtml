@@ -1,7 +1,7 @@
 @page "/Welcome"
 @model BookNest.Pages.WelcomeModel
 @{
-    ViewData["Title"] = "BookNest'e Hoş Geldin";
+    ViewData["Title"] = "Welcome";
     var rots = new[] { -7, 0, 7 };
     var isAuth = User.Identity?.IsAuthenticated == true;
 }
@@ -98,7 +98,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2.5rem;
+        font-size: .9rem;
+        color: #999;
     }
 
     .welcome-section-title {
@@ -210,24 +211,24 @@
 
     <section class="welcome-hero">
         <div>
-            <h1>Sıradaki kitabına karar ver.</h1>
+            <h1>Decide what to read next.</h1>
             <p class="lead">
-                BookNest'te kitapları keşfet, puan ver ve okuma alışkanlıklarını
-                tek bir yerde topla.
+                Discover books, rate them and keep track of your reading,
+                all in one place.
             </p>
 
             @if (isAuth)
             {
-                <a class="welcome-btn primary" href="/">Kitapları keşfet</a>
+                <a class="welcome-btn primary" href="/">Explore books</a>
             }
             else
             {
-                <a class="welcome-btn primary" href="/Identity/Account/Register">Ücretsiz kayıt ol</a>
-                <a class="welcome-btn ghost" href="/Identity/Account/Login">Giriş yap</a>
+                <a class="welcome-btn primary" href="/Identity/Account/Register">Sign up for free</a>
+                <a class="welcome-btn ghost" href="/Identity/Account/Login">Sign in</a>
             }
 
             <div class="welcome-stats">
-                @Model.BookCount kitap · @Model.RatingCount puan
+                @(Model.BookCount == 1 ? "1 book" : $"{Model.BookCount} books") · @(Model.RatingCount == 1 ? "1 rating" : $"{Model.RatingCount} ratings")
             </div>
         </div>
 
@@ -241,7 +242,7 @@
                     }
                     else
                     {
-                        <div class="stack-empty">📖</div>
+                        <div class="stack-empty">No cover</div>
                     }
                 </div>
             }
@@ -250,7 +251,7 @@
 
     @if (Model.FeaturedBooks.Any())
     {
-        <h2 class="welcome-section-title">Yeni eklenen kitaplar</h2>
+        <h2 class="welcome-section-title">Recently added</h2>
 
         <div class="welcome-books">
             @foreach (var b in Model.FeaturedBooks)
@@ -262,7 +263,7 @@
                     }
                     else
                     {
-                        <div class="stack-empty">📖</div>
+                        <div class="stack-empty">No cover</div>
                     }
                     <div class="t">@b.Title</div>
                     <div class="a">@b.Author</div>
@@ -276,8 +277,8 @@
     @if (!isAuth)
     {
         <section class="welcome-cta">
-            <h2>Okuyucu topluluğuna katıl</h2>
-            <a class="welcome-btn primary" href="/Identity/Account/Register">Ücretsiz kayıt ol</a>
+            <h2>Join our community of readers</h2>
+            <a class="welcome-btn primary" href="/Identity/Account/Register">Sign up for free</a>
         </section>
     }
 

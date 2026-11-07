@@ -41,18 +41,18 @@ namespace BookNest.Pages.Books
             string? coverImageUrl, int publishYear, string? category)
         {
             title = Truncate(title, 200);
-            author = Truncate(string.IsNullOrWhiteSpace(author) ? "Bilinmiyor" : author, 150);
+            author = Truncate(string.IsNullOrWhiteSpace(author) ? "Unknown" : author, 150);
 
             var exists = await _context.Books
                 .AnyAsync(b => b.Title == title && b.Author == author);
 
             if (exists)
             {
-                Message = $"\"{title}\" zaten kayıtlı.";
+                Message = $"\"{title}\" is already in the library.";
                 return RedirectToPage(new { Q });
             }
 
-            var categoryName = Truncate(string.IsNullOrWhiteSpace(category) ? "Diğer" : category, 100);
+            var categoryName = Truncate(string.IsNullOrWhiteSpace(category) ? "Other" : category, 100);
 
             var cat = await _context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
             if (cat == null)
@@ -79,7 +79,7 @@ namespace BookNest.Pages.Books
 
           
 
-            Message = $"\"{title}\" eklendi.";
+            Message = $"\"{title}\" was added.";
             return RedirectToPage(new { Q });
         }
 

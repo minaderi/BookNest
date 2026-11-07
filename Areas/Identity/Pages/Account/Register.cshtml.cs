@@ -51,9 +51,9 @@ namespace BookNest.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required(ErrorMessage = "Kullanıcı adı gerekli.")]
-            [StringLength(30, MinimumLength = 3, ErrorMessage = "Kullanıcı adı 3 ile 30 karakter arasında olmalı.")]
-            [Display(Name = "Kullanıcı adı")]
+            [Required(ErrorMessage = "Username is required.")]
+            [StringLength(30, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 30 characters.")]
+            [Display(Name = "Username")]
             public string UserName { get; set; }
 
             [Required]

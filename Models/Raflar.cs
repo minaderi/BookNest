@@ -6,13 +6,15 @@ namespace BookNest.Models
         public const string OkumakIstiyorum = "WantToRead";
         public const string Okuyorum = "CurrentlyReading";
         public const string Okudum = "Read";
+        public const string YarimBiraktim = "DidNotFinish";
 
         // Sayfalarda gösterilecek sıra, ad ve simge (simge şimdilik boş)
         public static readonly (string Kod, string Ad, string Ikon)[] Hepsi =
         {
             (OkumakIstiyorum, "Want to Read", ""),
             (Okuyorum, "Currently Reading", ""),
-            (Okudum, "Read", "")
+            (Okudum, "Read", ""),
+            (YarimBiraktim, "Did Not Finish", "")
         };
 
         public static bool GecerliMi(string? kod)

@@ -39,7 +39,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 4rem;
+        color: #999;
+        font-size: 1rem;
     }
 
     .details-title {
@@ -156,7 +157,7 @@
     .shelf-box { margin-top: 1.25rem; max-width: 260px; text-align: left; }
     .shelf-buttons { display: flex; flex-direction: column; gap: .4rem; }
 
-    .shelf-btn, .fav-btn {
+    .shelf-btn {
         width: 100%;
         text-align: left;
         background: #fff;
@@ -181,9 +182,89 @@
         text-align: left;
     }
 
-    .fav-btn { margin-top: .6rem; }
+    .fav-btn {
+        width: 100%;
+        margin-top: .6rem;
+        background: #fff;
+        border: 1px solid #D8D8D8;
+        color: #382110;
+        border-radius: 6px;
+        padding: .45rem .8rem;
+        font-size: .92rem;
+        cursor: pointer;
+        text-align: left;
+    }
     .fav-btn:hover { border-color: #c0392b; }
     .fav-btn.on { border-color: #c0392b; color: #c0392b; font-weight: 600; }
+
+    /* Yorumlar */
+    .review-form textarea {
+        width: 100%;
+        min-height: 110px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: .7rem .8rem;
+        font-size: .95rem;
+        resize: vertical;
+    }
+    .review-form textarea:focus { outline: none; border-color: var(--green); }
+    .review-actions { display: flex; gap: .6rem; align-items: center; margin-top: .5rem; }
+
+    .review-btn {
+        background: var(--green);
+        color: #fff;
+        border: 0;
+        border-radius: 6px;
+        padding: .45rem 1.2rem;
+        font-size: .9rem;
+        cursor: pointer;
+    }
+    .review-btn:hover { background: #004d48; }
+
+    .review-note { font-size: .92rem; color: #777; }
+    .review-note a { color: var(--green); }
+
+    .review-list { margin-top: 1.5rem; }
+
+    .review-item {
+        border-top: 1px solid var(--line);
+        padding: 1rem 0;
+    }
+
+    .review-head { display: flex; align-items: center; gap: .6rem; margin-bottom: .35rem; }
+    .review-user { font-weight: 700; color: var(--brown-dark); }
+    .review-you { font-size: .75rem; color: var(--green); border: 1px solid var(--line); border-radius: 999px; padding: 0 .5rem; }
+    .review-stars { display: inline-flex; color: #f5b301; }
+    .review-stars .star { width: 15px; height: 15px; flex: 0 0 15px; }
+    .review-stars .off { color: #dcdcdc; }
+
+    .review-tools { margin-left: auto; display: flex; gap: .8rem; }
+    .review-tools button {
+        background: none;
+        border: 0;
+        padding: 0;
+        color: var(--green);
+        font-size: .85rem;
+        cursor: pointer;
+    }
+    .review-tools button:hover { text-decoration: underline; }
+    .review-tools .danger { color: #c0392b; }
+
+    .review-cancel {
+        background: none;
+        border: 0;
+        color: #888;
+        font-size: .9rem;
+        cursor: pointer;
+    }
+    .review-cancel:hover { text-decoration: underline; }
+
+    .review-text {
+        font-family: Georgia, "Times New Roman", serif;
+        color: #333;
+        line-height: 1.65;
+        white-space: pre-line;
+    }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -207,7 +288,7 @@
             }
             else
             {
-                <div class="details-cover-empty">📖</div>
+                <div class="details-cover-empty">No cover</div>
             }
 
             <div class="rating-box">
@@ -306,8 +387,89 @@
                 ? "No description has been added for this book yet."
                 : Model.Book.Description)</div>
 
+            <h2 class="details-section-title" id="reviews">Community Reviews</h2>
+
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <p class="review-note"><a href="/Identity/Account/Login">Sign in</a> to write a review.</p>
+            }
+            else if (Model.MyRating == null)
+            {
+                <p class="review-note">Rate this book first to write a review.</p>
+            }
+            else
+            {
+                var yorumuVar = !string.IsNullOrEmpty(Model.MyComment);
+
+                <form method="post" asp-page-handler="Review" asp-route-id="@Model.Book.Id"
+                      class="review-form" id="review-form" style="@(yorumuVar ? "display:none" : "")">
+                    <textarea name="comment" id="review-text" maxlength="@BookNest.Pages.Books.DetailsModel.YorumMaxUzunluk"
+                              placeholder="What did you think of this book?">@Model.MyComment</textarea>
+                    <div class="review-actions">
+                        <button type="submit" class="review-btn">
+                            @(yorumuVar ? "Save changes" : "Post review")
+                        </button>
+                        @if (yorumuVar)
+                        {
+                            <button type="button" class="review-cancel" onclick="yorumFormu(false)">Cancel</button>
+                        }
+                    </div>
+                </form>
+            }
+
+            <div class="review-list">
+                @if (!Model.Yorumlar.Any())
+                {
+                    <p class="review-note">No reviews yet. Be the first to share your thoughts.</p>
+                }
+                @foreach (var y in Model.Yorumlar)
+                {
+                    <div class="review-item">
+                        <div class="review-head">
+                            <span class="review-user">@y.KullaniciAdi</span>
+                            @if (y.BenimMi)
+                            {
+                                <span class="review-you">You</span>
+                            }
+                            <span class="review-stars" title="@y.Puan of 5">
+                                @for (var s = 1; s <= 5; s++)
+                                {
+                                    <svg class="star @(s <= y.Puan ? "" : "off")"><use href="#star" /></svg>
+                                }
+                            </span>
+                            @if (y.BenimMi)
+                            {
+                                <div class="review-tools">
+                                    <button type="button" onclick="yorumFormu(true)">Edit</button>
+                                    <form method="post" asp-page-handler="DeleteReview" asp-route-id="@Model.Book.Id"
+                                          onsubmit="return confirm('Delete your review?');">
+                                        <button type="submit" class="danger">Delete</button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                        <div class="review-text">@y.Yorum</div>
+                    </div>
+                }
+            </div>
+
             <a href="/" class="details-back">&larr; Back to Home</a>
         </div>
 
     </div>
 </div>
+
+<script>
+    // Edit butonuna basınca yorum formunu açar, Cancel'a basınca kapatır
+    function yorumFormu(ac) {
+        var form = document.getElementById('review-form');
+        if (!form) return;
+        form.style.display = ac ? '' : 'none';
+        if (ac) {
+            var kutu = document.getElementById('review-text');
+            kutu.focus();
+            kutu.setSelectionRange(kutu.value.length, kutu.value.length);
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+</script>

@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BookNest.styles.css" asp-append-version="true" />
+    <style>
+        /* Menü yazıları iki satıra bölünmesin */
+        .navbar .nav-link,
+        .navbar .user-name { white-space: nowrap; }
+    </style>
 </head>
 <body>
     <header>
@@ -21,10 +26,16 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                         </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/MyBooks">My Books</a>
+                            </li>
+                        }
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Books/Import">Kitap Ekle</a>
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Books/Import">Add Book</a>
                             </li>
                         }
                         <li class="nav-item">
@@ -36,11 +47,11 @@
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <span class="nav-link text-dark user-name">👤 @User.Identity.Name</span>
+                                <span class="nav-link text-dark user-name">@User.Identity.Name</span>
                             </li>
                             <li class="nav-item">
                                 <form method="post" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/Welcome">
-                                    <button type="submit" class="nav-link text-dark logout-btn">Çıkış Yap</button>
+                                    <button type="submit" class="nav-link text-dark logout-btn">Sign Out</button>
                                 </form>
                             </li>
                         }

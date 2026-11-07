@@ -1,0 +1,185 @@
+@page
+@model BookNest.Pages.MyBooksModel
+@using BookNest.Models
+
+@{
+    ViewData["Title"] = "My Books";
+}
+
+<style>
+    .mybooks-page {
+        --brown-dark: #382110;
+        --green: #00635D;
+        --line: #D8D8D8;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 1.5rem 0 3rem;
+    }
+
+    .mybooks-title {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--brown-dark);
+        margin-bottom: 1.25rem;
+    }
+
+    .mybooks-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 1rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .mybooks-tab {
+        background: #fff;
+        border: 1px solid var(--line);
+        color: var(--brown-dark);
+        border-radius: 999px;
+        padding: .35rem 1rem;
+        font-size: .9rem;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+    .mybooks-tab:hover { border-color: var(--green); color: var(--brown-dark); }
+    .mybooks-tab.on { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+    .mybooks-tab .count { opacity: .75; margin-left: .25rem; }
+
+    .mybooks-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1.75rem 1.5rem;
+    }
+
+    .mybook {
+        position: relative;
+        text-decoration: none;
+        color: inherit;
+        text-align: center;
+    }
+
+    .mybook img,
+    .mybook .empty-cover {
+        width: 100%;
+        aspect-ratio: 2 / 3;
+        object-fit: cover;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(56, 33, 16, .22);
+        transition: transform .15s ease;
+    }
+
+    .mybook .empty-cover {
+        background: #fff;
+        border: 1px dashed var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        font-size: .85rem;
+    }
+
+    .mybook:hover img { transform: translateY(-4px); }
+
+    .mybook .fav {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        background: #c0392b;
+        color: #fff;
+        border-radius: 999px;
+        padding: .1rem .55rem;
+        font-size: .72rem;
+        font-weight: 600;
+    }
+
+    .mybook .t {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 700;
+        color: var(--brown-dark);
+        margin-top: .6rem;
+        font-size: .95rem;
+        line-height: 1.25;
+    }
+
+    .mybook .a { font-size: .82rem; color: #777; }
+
+    .mybook .shelf {
+        display: inline-block;
+        margin-top: .35rem;
+        font-size: .78rem;
+        color: var(--green);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: .1rem .6rem;
+        background: #fff;
+    }
+
+    .mybooks-empty {
+        text-align: center;
+        color: #777;
+        padding: 3rem 1rem;
+    }
+    .mybooks-empty a { color: var(--green); }
+</style>
+
+<div class="mybooks-page">
+
+    <h1 class="mybooks-title">My Books</h1>
+
+    <nav class="mybooks-tabs">
+        <a class="mybooks-tab @(Model.Raf == null ? "on" : "")" asp-page="/MyBooks">
+            All <span class="count">(@Model.ToplamSayi)</span>
+        </a>
+        @foreach (var raf in Raflar.Hepsi)
+        {
+            <a class="mybooks-tab @(Model.Raf == raf.Kod ? "on" : "")" asp-page="/MyBooks" asp-route-raf="@raf.Kod">
+                @raf.Ad <span class="count">(@Model.RafSayilari[raf.Kod])</span>
+            </a>
+        }
+        <a class="mybooks-tab @(Model.Raf == "favori" ? "on" : "")" asp-page="/MyBooks" asp-route-raf="favori">
+            Favorites <span class="count">(@Model.FavoriSayisi)</span>
+        </a>
+    </nav>
+
+    @if (!Model.Kayitlar.Any())
+    {
+        <div class="mybooks-empty">
+            <p>There are no books here yet.</p>
+            <p>Open a book's page and use the shelf or favorite buttons to add it.</p>
+            <a href="/">Browse books &rarr;</a>
+        </div>
+    }
+    else
+    {
+        <div class="mybooks-grid">
+            @foreach (var k in Model.Kayitlar)
+            {
+                <a class="mybook" asp-page="/Books/Details" asp-route-id="@k.BookId">
+                    @if (!string.IsNullOrWhiteSpace(k.Book.CoverImageUrl))
+                    {
+                        <img src="@k.Book.CoverImageUrl" alt="@k.Book.Title" />
+                    }
+                    else
+                    {
+                        <div class="empty-cover">No cover</div>
+                    }
+
+                    @if (k.IsFavorite)
+                    {
+                        <span class="fav">Favorite</span>
+                    }
+
+                    <div class="t">@k.Book.Title</div>
+                    <div class="a">@k.Book.Author</div>
+
+                    @if (Raflar.GecerliMi(k.Status))
+                    {
+                        <span class="shelf">@Raflar.AdiNe(k.Status)</span>
+                    }
+                </a>
+            }
+        </div>
+    }
+</div>

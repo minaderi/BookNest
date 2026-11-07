@@ -1,5 +1,6 @@
 @page "/Books/Details/{id:int}"
 @model BookNest.Pages.Books.DetailsModel
+@using BookNest.Models
 
 @{
     ViewData["Title"] = Model.Book.Title;
@@ -150,6 +151,39 @@
     .star-input button:hover ~ button { color: #f5b301; }
 
     .rate-login { font-size: .88rem; color: #00635D; }
+
+    /* Raf ve favori alanı */
+    .shelf-box { margin-top: 1.25rem; max-width: 260px; text-align: left; }
+    .shelf-buttons { display: flex; flex-direction: column; gap: .4rem; }
+
+    .shelf-btn, .fav-btn {
+        width: 100%;
+        text-align: left;
+        background: #fff;
+        border: 1px solid #D8D8D8;
+        color: #382110;
+        border-radius: 6px;
+        padding: .45rem .8rem;
+        font-size: .92rem;
+        cursor: pointer;
+    }
+    .shelf-btn:hover { border-color: #00635D; }
+    .shelf-btn.on { background: #00635D; border-color: #00635D; color: #fff; font-weight: 600; }
+
+    .shelf-remove {
+        background: none;
+        border: 0;
+        padding: .2rem 0;
+        color: #888;
+        font-size: .82rem;
+        text-decoration: underline;
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .fav-btn { margin-top: .6rem; }
+    .fav-btn:hover { border-color: #c0392b; }
+    .fav-btn.on { border-color: #c0392b; color: #c0392b; font-weight: 600; }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -161,7 +195,7 @@
 <div class="details-page">
 
     <div class="details-breadcrumb">
-        <a href="/">Ana sayfa</a> &rsaquo; <span>@Model.Book.Title</span>
+        <a href="/">Home</a> &rsaquo; <span>@Model.Book.Title</span>
     </div>
 
     <div class="row g-5">
@@ -192,16 +226,18 @@
                     </div>
                     @if (Model.RatingCount > 0)
                     {
-                        <span class="num">@Model.AverageRating.ToString("0.0")</span>
+                        <span class="num">@Model.AverageRating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)</span>
                     }
                 </div>
 
                 <div class="rating-summary">
-                    @(Model.RatingCount > 0 ? $"{Model.RatingCount} puan" : "Henüz puan verilmemiş")
+                    @(Model.RatingCount == 0 ? "No ratings yet"
+                        : Model.RatingCount == 1 ? "1 rating"
+                        : $"{Model.RatingCount} ratings")
                 </div>
 
                 <div class="rate-title">
-                    @(User.Identity?.IsAuthenticated == true ? "Bu kitabı puanla" : "Puan vermek için")
+                    @(User.Identity?.IsAuthenticated == true ? "Rate this book" : "Want to rate this book?")
                 </div>
 
                 @if (User.Identity?.IsAuthenticated == true)
@@ -212,7 +248,7 @@
                             {
                                 <button type="submit" name="rating" value="@i"
                                         class="@(Model.MyRating >= i ? "on" : "")"
-                                        title="@i yıldız">
+                                        title="@(i == 1 ? "1 star" : $"{i} stars")">
                                     <svg class="star"><use href="#star" /></svg>
                                 </button>
                             }
@@ -221,9 +257,36 @@
                 }
                 else
                 {
-                    <a class="rate-login" href="/Identity/Account/Login">Giriş yap</a>
+                    <a class="rate-login" href="/Identity/Account/Login">Sign in</a>
                 }
             </div>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <div class="shelf-box">
+                    <div class="rate-title">My Shelf</div>
+
+                    <form method="post" asp-page-handler="Shelf" asp-route-id="@Model.Book.Id" class="shelf-buttons">
+                        @foreach (var raf in Raflar.Hepsi)
+                        {
+                            <button type="submit" name="status" value="@raf.Kod"
+                                    class="shelf-btn @(Model.MyShelf == raf.Kod ? "on" : "")">
+                                @raf.Ad
+                            </button>
+                        }
+                        @if (Model.MyShelf != null)
+                        {
+                            <button type="submit" name="status" value="remove" class="shelf-remove">Remove from shelf</button>
+                        }
+                    </form>
+
+                    <form method="post" asp-page-handler="Favorite" asp-route-id="@Model.Book.Id">
+                        <button type="submit" class="fav-btn @(Model.IsFavorite ? "on" : "")">
+                            @(Model.IsFavorite ? "In Favorites" : "Add to Favorites")
+                        </button>
+                    </form>
+                </div>
+            }
         </div>
 
         <div class="col-md-8">
@@ -231,19 +294,19 @@
             <div class="details-author">@Model.Book.Author</div>
 
             <div class="details-tags">
-                <span class="details-tag">@(Model.Book.Category?.Name ?? "Kategori belirtilmemiş")</span>
+                <span class="details-tag">@(Model.Book.Category?.Name ?? "Uncategorized")</span>
                 @if (Model.Book.PublishYear > 0)
                 {
                     <span class="details-tag">@Model.Book.PublishYear</span>
                 }
             </div>
 
-            <h2 class="details-section-title">Kitap Özeti</h2>
+            <h2 class="details-section-title">Description</h2>
             <div class="details-desc">@(string.IsNullOrWhiteSpace(Model.Book.Description)
-                ? "Bu kitap için henüz bir açıklama eklenmemiş."
+                ? "No description has been added for this book yet."
                 : Model.Book.Description)</div>
 
-            <a href="/" class="details-back">&larr; Ana sayfaya dön</a>
+            <a href="/" class="details-back">&larr; Back to Home</a>
         </div>
 
     </div>

@@ -1,11 +1,43 @@
 [
   {
+    "Title": "Akhilleus'un Şarkısı",
+    "Author": "Madeline Miller",
+    "Description": "Sürgün edilen genç prens Patroklos, Kral Peleus'un sarayında yarı tanrı Akhilleus ile tanışır. Aralarındaki dostluk zamanla derin bir aşka dönüşür ve ikisini Truva Savaşı'na kadar sürükler. İlyada'nın Patroklos'un gözünden yeniden anlatımı; 2012 Orange Ödülü sahibi.",
+    "CoverImageUrl": "https://covers.openlibrary.org/b/id/12205975-L.jpg",
+    "PublishYear": 2013,
+    "Category": "Mythology"
+  },
+  {
+    "Title": "Ben, Kirke",
+    "Author": "Madeline Miller",
+    "Description": "Güneş tanrısı Helios'un kızı Kirke, ne tanrıların ne de ölümlülerin arasında kendine yer bulabilir. Büyü gücünü keşfedince Zeus tarafından ıssız Aiaia adasına sürgün edilir; burada Odysseus, Daidalos ve Medeia gibi efsanevi isimlerle yolları kesişir. Yunan mitolojisinin gölgede kalmış bir kadın figürünü merkeze alan bir roman.",
+    "CoverImageUrl": "https://covers.openlibrary.org/b/id/10715958-L.jpg",
+    "PublishYear": 2019,
+    "Category": "Mythology"
+  },
+  {
     "Title": "Black Bag",
     "Author": "Luke Kennard",
     "Description": "Booker Shortlist 2026 Adayı",
     "CoverImageUrl": "/images/black-bag.jpg",
     "PublishYear": 2026,
     "Category": "Fiction"
+  },
+  {
+    "Title": "Gece Yarısı Kütüphanesi",
+    "Author": "Matt Haig",
+    "Description": "Nora Seed, hayatının en zor gecesinde kendini yaşam ile ölüm arasındaki bir kütüphanede bulur. Raflardaki her kitap, farklı seçimler yapsaydı yaşayabileceği başka bir hayatı anlatır. Pişmanlıklar, seçimler ve yaşamaya değer bir hayat üzerine bir roman.",
+    "CoverImageUrl": "https://covers.openlibrary.org/b/id/13768503-L.jpg",
+    "PublishYear": 2021,
+    "Category": "Fiction"
+  },
+  {
+    "Title": "Harry Potter ve Felsefe Taşı",
+    "Author": "J. K. Rowling",
+    "Description": "Harry Potter, on birinci yaş gününde aslında bir büyücü olduğunu öğrenir ve Hogwarts Cadılık ve Büyücülük Okulu'na davet edilir. Ron ve Hermione ile kurduğu dostluk, okulun derinliklerinde saklanan Felsefe Taşı'nın sırrına uzanan bir maceraya dönüşür. Serinin ilk kitabı.",
+    "CoverImageUrl": "https://covers.openlibrary.org/b/id/15163706-L.jpg",
+    "PublishYear": 2001,
+    "Category": "Fantasy"
   },
   {
     "Title": "Suç ve Ceza",

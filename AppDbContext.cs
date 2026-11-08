@@ -17,6 +17,7 @@ namespace BookNest.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<ReviewLike> ReviewLikes { get; set; }
         public DbSet<ReviewReply> ReviewReplies { get; set; }
+        public DbSet<ReadingGoal> ReadingGoals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -62,6 +63,11 @@ namespace BookNest.Data
             modelBuilder.Entity<ReviewReply>()
                 .Property(r => r.Text)
                 .HasMaxLength(1000);
+
+            // Okuma hedefi: her kullanıcının her yıl için tek hedefi olur
+            modelBuilder.Entity<ReadingGoal>()
+                .HasIndex(g => new { g.UserId, g.Year })
+                .IsUnique();
 
             // Kategoriyi otomatik ekle
             modelBuilder.Entity<Category>().HasData(

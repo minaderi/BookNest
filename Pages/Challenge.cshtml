@@ -1,0 +1,420 @@
+@page
+@model BookNest.Pages.ChallengeModel
+
+@{
+    ViewData["Title"] = "Reading Challenge";
+
+    var fark = Model.OkunanSayi - Model.BeklenenSayi;
+    var tamamlandi = Model.Hedef.HasValue && Model.OkunanSayi >= Model.Hedef;
+
+    // İlerleme halkası (SVG): yarıçap 56, çevre = 2 * pi * r
+    const double r = 56;
+    var cevre = 2 * Math.PI * r;
+    var bosluk = cevre * (1 - Model.Yuzde / 100.0);
+    var inv = System.Globalization.CultureInfo.InvariantCulture;
+
+    var aylar = new[] { "J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D" };
+    var enCok = Math.Max(1, Model.AylikSayilar.Max());
+
+    string Cogul(int n, string kelime) => n == 1 ? kelime : kelime + "s";
+}
+
+<style>
+    .ch {
+        --ink: #382110;
+        --muted: #8a7d70;
+        --soft: #6b5d50;
+        --green: #00635D;
+        --amber: #b26a00;
+        --gold: #a8741a;
+        --rule: #d8cfc2;
+        --faint: #e6dfd4;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 1.5rem 0 4rem;
+        color: var(--ink);
+    }
+    .ch .serif { font-family: Georgia, "Times New Roman", serif; }
+
+    .ch-eyebrow {
+        text-transform: uppercase;
+        letter-spacing: .22em;
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--green);
+    }
+    .ch-title {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 3rem;
+        font-weight: 400;
+        letter-spacing: -.01em;
+        margin: .3rem 0 0;
+    }
+    .ch-title i { color: var(--green); }
+
+    .ch-rule { border: 0; border-top: 1px solid var(--ink); opacity: 1; margin: 1.6rem 0 2.4rem; }
+    .ch-rule.thin { border-top-color: var(--rule); margin: 2.8rem 0 2rem; }
+
+    .ch-msg {
+        font-family: Georgia, "Times New Roman", serif;
+        font-style: italic;
+        color: var(--green);
+        margin: -1rem 0 2rem;
+    }
+
+    /* ---------- Hero ---------- */
+    .ch-row { display: flex; flex-wrap: wrap; align-items: center; gap: 3.5rem; }
+
+    .ch-ring { position: relative; width: 210px; height: 210px; flex-shrink: 0; }
+    .ch-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .ch-ring .track { fill: none; stroke: var(--faint); stroke-width: 5; }
+    .ch-ring .fill {
+        fill: none;
+        stroke: var(--green);
+        stroke-width: 5;
+        stroke-linecap: round;
+        animation: ch-grow 1.1s ease-out;
+    }
+    .ch-ring.done .fill { stroke: var(--gold); }
+    @@keyframes ch-grow { from { stroke-dashoffset: @cevre.ToString("0.##", inv); } }
+
+    .ch-ring-text {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .ch-ring-text .num { font-family: Georgia, "Times New Roman", serif; font-size: 3.6rem; line-height: 1; }
+    .ch-ring-text .of {
+        font-family: Georgia, "Times New Roman", serif;
+        font-style: italic;
+        font-size: .95rem;
+        color: var(--muted);
+        margin-top: .35rem;
+    }
+
+    .ch-list { flex: 1; min-width: 260px; }
+    .ch-item {
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+        padding: .7rem 0;
+        border-bottom: 1px solid var(--faint);
+    }
+    .ch-item:last-of-type { border-bottom: 0; }
+    .ch-item .v { font-family: Georgia, "Times New Roman", serif; font-size: 2rem; width: 80px; flex-shrink: 0; }
+    .ch-item .l { font-family: Georgia, "Times New Roman", serif; font-style: italic; color: var(--soft); font-size: 1.05rem; }
+
+    .ch-note { margin-top: 1rem; font-family: Georgia, "Times New Roman", serif; font-style: italic; }
+    .ch-note::before { content: "— "; }
+    .ch-note.behind { color: var(--amber); }
+    .ch-note.ahead { color: var(--green); }
+    .ch-note.ontrack { color: var(--soft); }
+    .ch-note.done { color: var(--gold); font-size: 1.15rem; }
+
+    /* ---------- Edit goal ---------- */
+    .ch-edit { margin-top: 1.2rem; }
+    .ch-edit summary,
+    .ch-textbtn {
+        display: inline-block;
+        list-style: none;
+        cursor: pointer;
+        background: none;
+        border: none;
+        border-bottom: 1px solid currentColor;
+        padding: 0 0 2px;
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: .14em;
+        font-weight: 700;
+        color: var(--green);
+    }
+    .ch-edit summary::-webkit-details-marker { display: none; }
+    .ch-edit[open] summary { margin-bottom: 1rem; }
+    .ch-textbtn.muted { color: var(--muted); }
+    .ch-textbtn.muted:hover { color: #c0392b; }
+
+    .ch-form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .7rem;
+        font-family: Georgia, "Times New Roman", serif;
+        font-style: italic;
+        color: var(--soft);
+    }
+    .ch-input {
+        width: 80px;
+        border: 0;
+        border-bottom: 1.5px solid var(--ink);
+        background: transparent;
+        padding: .15rem .3rem;
+        font-family: Georgia, "Times New Roman", serif;
+        font-style: normal;
+        font-size: 1.4rem;
+        color: var(--ink);
+        text-align: center;
+    }
+    .ch-input:focus { outline: none; border-bottom-color: var(--green); }
+
+    .ch-btn {
+        background: var(--ink);
+        color: #fff;
+        border: none;
+        border-radius: 0;
+        padding: .5rem 1.2rem;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-style: normal;
+        font-size: .75rem;
+        text-transform: uppercase;
+        letter-spacing: .14em;
+        font-weight: 700;
+        transition: background .15s ease;
+    }
+    .ch-btn:hover { background: var(--green); }
+
+    /* ---------- Start (no goal yet) ---------- */
+    .ch-start h2 { font-family: Georgia, "Times New Roman", serif; font-size: 1.9rem; font-weight: 400; margin-bottom: .4rem; }
+    .ch-start p { font-family: Georgia, "Times New Roman", serif; font-style: italic; color: var(--soft); margin-bottom: 2rem; }
+
+    .ch-picks { display: flex; flex-wrap: wrap; gap: 0; margin-bottom: 2rem; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .ch-pick {
+        flex: 1;
+        min-width: 140px;
+        background: none;
+        border: none;
+        border-right: 1px solid var(--rule);
+        padding: 1.3rem .5rem;
+        text-align: center;
+        color: var(--ink);
+        transition: background .15s ease;
+    }
+    .ch-pick:last-child { border-right: 0; }
+    .ch-pick:hover { background: rgba(0, 99, 93, .06); }
+    .ch-pick .n { display: block; font-family: Georgia, "Times New Roman", serif; font-size: 2.6rem; line-height: 1; }
+    .ch-pick .d { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: .9rem; color: var(--muted); }
+    .ch-pick:hover .n { color: var(--green); }
+
+    .ch-start-note { margin-top: 1.5rem !important; margin-bottom: 0 !important; }
+
+    /* ---------- Section headings ---------- */
+    .ch-h { font-family: Georgia, "Times New Roman", serif; font-size: 1.6rem; font-weight: 400; margin: 0 0 1.5rem; }
+    .ch-h small { font-size: 1rem; font-style: italic; color: var(--muted); }
+
+    /* ---------- Monthly chart ---------- */
+    .ch-chart {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: .6rem;
+        align-items: end;
+        height: 120px;
+    }
+    .ch-month { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+    .ch-month .c { font-size: .75rem; font-weight: 700; color: var(--ink); min-height: 1em; margin-bottom: .25rem; }
+    .ch-month .bar { width: 100%; max-width: 30px; border-radius: 2px; background: var(--faint); }
+    .ch-month.has .bar { background: var(--ink); }
+    .ch-month.future .bar { opacity: .4; }
+    .ch-month .m { font-size: .72rem; color: var(--muted); margin-top: .45rem; }
+    .ch-month.now .m { color: var(--ink); font-weight: 800; }
+
+    /* ---------- Books ---------- */
+    .ch-books { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 2rem 1.6rem; }
+    .ch-book { text-decoration: none; color: inherit; }
+    .ch-book:hover { color: inherit; }
+    .ch-book .no { font-family: Georgia, "Times New Roman", serif; font-style: italic; color: var(--muted); font-size: .85rem; margin-bottom: .4rem; }
+    .ch-book img,
+    .ch-book .empty-cover {
+        width: 100%;
+        aspect-ratio: 2 / 3;
+        object-fit: cover;
+        display: block;
+        box-shadow: 0 12px 24px -14px rgba(56, 33, 16, .7);
+        transition: transform .2s ease;
+    }
+    .ch-book .empty-cover {
+        border: 1px solid var(--rule);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Georgia, "Times New Roman", serif;
+        font-style: italic;
+        color: var(--muted);
+        font-size: .85rem;
+    }
+    .ch-book:hover img { transform: translateY(-4px); }
+    .ch-book .t { font-family: Georgia, "Times New Roman", serif; font-size: .95rem; margin-top: .7rem; line-height: 1.25; }
+    .ch-book .d { font-size: .72rem; color: var(--muted); margin-top: .15rem; text-transform: uppercase; letter-spacing: .08em; }
+
+    .ch-empty { font-family: Georgia, "Times New Roman", serif; font-style: italic; color: var(--soft); }
+    .ch-empty a { color: var(--green); font-style: normal; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: .78rem; text-transform: uppercase; letter-spacing: .14em; font-weight: 700; text-decoration: none; border-bottom: 1px solid currentColor; }
+
+    @@media (max-width: 640px) {
+        .ch-title { font-size: 2.2rem; }
+        .ch-row { justify-content: center; gap: 1.6rem; }
+        .ch-ring { width: 180px; height: 180px; }
+        .ch-ring-text .num { font-size: 3rem; }
+        .ch-chart { gap: .25rem; }
+    }
+</style>
+
+<div class="ch">
+
+    <div class="ch-eyebrow">Reading Challenge</div>
+    <h1 class="ch-title">Your <i>@Model.Yil</i> in books</h1>
+    <hr class="ch-rule" />
+
+    @if (!string.IsNullOrEmpty(Model.Mesaj))
+    {
+        <p class="ch-msg">@Model.Mesaj</p>
+    }
+
+    @if (Model.Hedef.HasValue)
+    {
+        <!-- Hedef var: halka + istatistikler -->
+        <div class="ch-row">
+            <div class="ch-ring @(tamamlandi ? "done" : "")" role="progressbar"
+                 aria-valuenow="@Model.Yuzde" aria-valuemin="0" aria-valuemax="100"
+                 aria-label="@Model.OkunanSayi of @Model.Hedef books read">
+                <svg viewBox="0 0 128 128">
+                    <circle class="track" cx="64" cy="64" r="@r" />
+                    @if (Model.OkunanSayi > 0)
+                    {
+                        <circle class="fill" cx="64" cy="64" r="@r"
+                                stroke-dasharray="@cevre.ToString("0.##", inv)"
+                                stroke-dashoffset="@bosluk.ToString("0.##", inv)" />
+                    }
+                </svg>
+                <div class="ch-ring-text">
+                    <span class="num">@Model.OkunanSayi</span>
+                    <span class="of">of @Model.Hedef books · @Model.Yuzde%</span>
+                </div>
+            </div>
+
+            <div class="ch-list">
+                <div class="ch-item"><span class="v">@Model.KalanKitap</span><span class="l">@Cogul(Model.KalanKitap, "book") left to read</span></div>
+                <div class="ch-item"><span class="v">@Model.KalanGun</span><span class="l">@Cogul(Model.KalanGun, "day") left in the year</span></div>
+                @if (!tamamlandi)
+                {
+                    <div class="ch-item"><span class="v">~@Model.AylikGereken</span><span class="l">@Cogul(Model.AylikGereken, "book") a month to finish</span></div>
+                }
+
+                @if (tamamlandi)
+                {
+                    <div class="ch-note done">Goal complete. Wonderful reading year!</div>
+                }
+                else if (fark > 0)
+                {
+                    <div class="ch-note ahead">@fark @Cogul(fark, "book") ahead of schedule</div>
+                }
+                else if (fark == 0)
+                {
+                    <div class="ch-note ontrack">right on track</div>
+                }
+                else
+                {
+                    <div class="ch-note behind">@(-fark) @Cogul(-fark, "book") behind schedule</div>
+                }
+
+                <details class="ch-edit" @(ViewData.ModelState.IsValid ? "" : "open")>
+                    <summary>Edit goal</summary>
+                    <form method="post" class="ch-form">
+                        <label asp-for="YeniHedef">I want to read</label>
+                        <input asp-for="YeniHedef" type="number" min="1" max="1000" required class="ch-input" />
+                        <span>books this year</span>
+                        <button type="submit" class="ch-btn">Save</button>
+                        <button type="submit" form="ch-remove-form" class="ch-textbtn muted">Remove</button>
+                        <span asp-validation-for="YeniHedef" class="text-danger small w-100"></span>
+                    </form>
+                </details>
+                <form id="ch-remove-form" method="post" asp-page-handler="Remove"
+                      onsubmit="return confirm('Remove your reading goal for @Model.Yil?');"></form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Hedef yok: başlangıç -->
+        <div class="ch-start">
+            <h2>How many books will you read this year?</h2>
+            <p>Choose a goal. Every book you put on your Read shelf will count toward it.</p>
+
+            <form method="post" class="ch-picks">
+                <button type="submit" name="YeniHedef" value="12" class="ch-pick">
+                    <span class="n">12</span><span class="d">one a month</span>
+                </button>
+                <button type="submit" name="YeniHedef" value="24" class="ch-pick">
+                    <span class="n">24</span><span class="d">two a month</span>
+                </button>
+                <button type="submit" name="YeniHedef" value="52" class="ch-pick">
+                    <span class="n">52</span><span class="d">one a week</span>
+                </button>
+            </form>
+
+            <form method="post" class="ch-form">
+                <span>or set your own:</span>
+                <input asp-for="YeniHedef" type="number" min="1" max="1000" required class="ch-input" />
+                <button type="submit" class="ch-btn">Start challenge</button>
+                <span asp-validation-for="YeniHedef" class="text-danger small w-100"></span>
+            </form>
+
+            @if (Model.OkunanSayi > 0)
+            {
+                <p class="ch-start-note">You've already read @Model.OkunanSayi @Cogul(Model.OkunanSayi, "book") this year. They'll count toward your goal.</p>
+            }
+        </div>
+    }
+
+    <!-- Aylık grafik -->
+    <hr class="ch-rule thin" />
+    <h2 class="ch-h">Books per month</h2>
+    <div class="ch-chart">
+        @for (var i = 0; i < 12; i++)
+        {
+            var sayi = Model.AylikSayilar[i];
+            var yukseklik = sayi == 0 ? 3 : Math.Max(12, sayi * 90 / enCok);
+            var sinif = (sayi > 0 ? "has " : "") + (i + 1 > Model.BuAy ? "future " : "") + (i + 1 == Model.BuAy ? "now" : "");
+            <div class="ch-month @sinif" title="@sayi @Cogul(sayi, "book")">
+                <span class="c">@(sayi > 0 ? sayi.ToString() : "")</span>
+                <div class="bar" style="height: @(yukseklik)px"></div>
+                <span class="m">@aylar[i]</span>
+            </div>
+        }
+    </div>
+
+    <!-- Okunan kitaplar -->
+    <hr class="ch-rule thin" />
+    <h2 class="ch-h">Books read in @Model.Yil <small>— @Model.OkunanSayi so far</small></h2>
+
+    @if (!Model.OkunanKitaplar.Any())
+    {
+        <div class="ch-empty">
+            <p>No books marked as read yet this year. Open a book's page and put it on your Read shelf to count it here.</p>
+            <a href="/">Browse books</a>
+        </div>
+    }
+    else
+    {
+        <div class="ch-books">
+            @{ var sira = Model.OkunanSayi; }
+            @foreach (var k in Model.OkunanKitaplar)
+            {
+                <a class="ch-book" asp-page="/Books/Details" asp-route-id="@k.BookId">
+                    <div class="no">No. @(sira--)</div>
+                    @if (!string.IsNullOrWhiteSpace(k.Book.CoverImageUrl))
+                    {
+                        <img src="@k.Book.CoverImageUrl" alt="@k.Book.Title" />
+                    }
+                    else
+                    {
+                        <div class="empty-cover">No cover</div>
+                    }
+                    <div class="t">@k.Book.Title</div>
+                    <div class="d">@k.ReadDate?.ToString("MMM d", inv)</div>
+                </a>
+            }
+        </div>
+    }
+</div>

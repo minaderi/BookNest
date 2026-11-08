@@ -1,0 +1,475 @@
+@page
+@model BookNest.Pages.DiscoverModel
+@using BookNest.Models
+
+@{
+    ViewData["Title"] = "Discover";
+    var inv = System.Globalization.CultureInfo.InvariantCulture;
+    string Cogul(int n, string kelime) => n == 1 ? kelime : kelime + "s";
+    var toplamKategori = Model.Kategoriler.Sum(k => k.Sayi);
+}
+
+<style>
+    .ds {
+        --ink: #382110;
+        --muted: #8a7d70;
+        --soft: #6b5d50;
+        --green: #00635D;
+        --star: #c98a1a;
+        --rule: #d8cfc2;
+        --faint: #e6dfd4;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 1.5rem 0 4rem;
+        color: var(--ink);
+    }
+
+    .ds-eyebrow {
+        text-transform: uppercase;
+        letter-spacing: .22em;
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--green);
+    }
+    .ds-title {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 3rem;
+        font-weight: 400;
+        letter-spacing: -.01em;
+        margin: .3rem 0 0;
+    }
+    .ds-title i { color: var(--green); }
+    .ds-rule { border: 0; border-top: 1px solid var(--ink); opacity: 1; margin: 1.6rem 0 2rem; }
+
+    /* ---------- Search ---------- */
+    .ds-search { display: flex; align-items: flex-end; gap: 1rem; margin-bottom: 2rem; }
+    .ds-search-field { flex: 1; position: relative; }
+    .ds-search-field svg {
+        position: absolute;
+        left: 0;
+        bottom: .7rem;
+        width: 20px;
+        height: 20px;
+        stroke: var(--muted);
+        fill: none;
+        stroke-width: 2;
+    }
+    .ds-input {
+        width: 100%;
+        border: 0;
+        border-bottom: 1.5px solid var(--ink);
+        background: transparent;
+        padding: .5rem .2rem .5rem 2rem;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.5rem;
+        color: var(--ink);
+    }
+    .ds-input::placeholder { font-style: italic; color: #b3a89c; }
+    .ds-input:focus { outline: none; border-bottom-color: var(--green); }
+    .ds-input::-webkit-search-cancel-button { cursor: pointer; }
+
+    .ds-btn {
+        background: var(--ink);
+        color: #fff;
+        border: none;
+        padding: .6rem 1.4rem;
+        font-size: .75rem;
+        text-transform: uppercase;
+        letter-spacing: .14em;
+        font-weight: 700;
+        transition: background .15s ease;
+    }
+    .ds-btn:hover { background: var(--green); }
+
+    /* ---------- Filters ---------- */
+    .ds-filters {
+        border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+        margin-bottom: 1.6rem;
+    }
+    .ds-frow {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        align-items: baseline;
+        gap: .5rem 1rem;
+        padding: .8rem 0;
+    }
+    .ds-frow + .ds-frow { border-top: 1px dashed var(--faint); }
+    .ds-flabel {
+        font-size: .68rem;
+        text-transform: uppercase;
+        letter-spacing: .16em;
+        font-weight: 700;
+        color: var(--muted);
+    }
+    .ds-opts { display: flex; flex-wrap: wrap; gap: .45rem 1.4rem; }
+    .ds-opt {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1rem;
+        color: var(--soft);
+        text-decoration: none;
+        padding-bottom: 2px;
+        border-bottom: 1.5px solid transparent;
+        white-space: nowrap;
+    }
+    .ds-opt:hover { color: var(--ink); border-bottom-color: var(--rule); }
+    .ds-opt.on { color: var(--ink); border-bottom-color: var(--ink); }
+    .ds-opt.empty { color: #c9bfb3; pointer-events: none; }
+    .ds-opt .n { font-style: italic; color: var(--muted); font-size: .85rem; margin-left: .15rem; }
+    .ds-opt .st { color: var(--star); font-style: normal; }
+    .ds-opt.login { font-style: italic; color: var(--muted); }
+    .ds-opt.login:hover { color: var(--green); }
+
+    /* ---------- Summary + sort ---------- */
+    .ds-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: .8rem 2rem;
+        margin-bottom: 1.8rem;
+    }
+    .ds-summary {
+        font-family: Georgia, "Times New Roman", serif;
+        font-style: italic;
+        color: var(--soft);
+        margin: 0;
+    }
+    .ds-summary strong { font-style: normal; color: var(--ink); }
+    .ds-clear {
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-style: normal;
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .14em;
+        font-weight: 700;
+        color: var(--green);
+        text-decoration: none;
+        border-bottom: 1px solid currentColor;
+        margin-left: .8rem;
+        white-space: nowrap;
+    }
+
+    .ds-sort { display: flex; align-items: center; gap: .5rem; font-size: .68rem; text-transform: uppercase; letter-spacing: .16em; font-weight: 700; color: var(--muted); }
+    .ds-sort select {
+        border: 0;
+        border-bottom: 1px solid var(--ink);
+        background: transparent;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: .95rem;
+        text-transform: none;
+        letter-spacing: 0;
+        font-weight: 400;
+        color: var(--ink);
+        padding: .1rem .2rem;
+        cursor: pointer;
+    }
+    .ds-sort select:focus { outline: none; border-bottom-color: var(--green); }
+
+    /* ---------- Books ---------- */
+    .ds-books { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 2.4rem 1.8rem; }
+    .ds-book { position: relative; text-decoration: none; color: inherit; display: flex; flex-direction: column; }
+    .ds-book:hover { color: inherit; }
+    .ds-book img,
+    .ds-book .empty-cover {
+        width: 100%;
+        aspect-ratio: 2 / 3;
+        object-fit: cover;
+        display: block;
+        box-shadow: 0 12px 24px -14px rgba(56, 33, 16, .7);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .ds-book .empty-cover {
+        border: 1px solid var(--rule);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        text-align: center;
+        font-family: Georgia, "Times New Roman", serif;
+        font-style: italic;
+        color: var(--muted);
+        font-size: .95rem;
+    }
+    .ds-book:hover img,
+    .ds-book:hover .empty-cover { transform: translateY(-4px); box-shadow: 0 18px 28px -16px rgba(56, 33, 16, .75); }
+
+    .ds-book .mine {
+        position: absolute;
+        top: .5rem;
+        left: 0;
+        background: var(--ink);
+        color: #fff;
+        font-size: .62rem;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        font-weight: 700;
+        padding: .25rem .55rem;
+        z-index: 1;
+    }
+
+    .ds-book .cat { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--green); font-weight: 700; margin-top: .8rem; }
+    .ds-book .t { font-family: Georgia, "Times New Roman", serif; font-size: 1rem; line-height: 1.25; margin-top: .2rem; }
+    .ds-book .a { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: .88rem; color: var(--soft); margin-top: .1rem; }
+
+    .ds-rating { display: flex; align-items: center; gap: .4rem; margin-top: .4rem; font-size: .75rem; color: var(--muted); }
+    .ds-stars { position: relative; display: inline-block; font-size: .9rem; line-height: 1; letter-spacing: 1px; color: var(--faint); }
+    .ds-stars .fill { position: absolute; inset: 0 auto 0 0; overflow: hidden; white-space: nowrap; color: var(--star); }
+    .ds-rating .none { font-style: italic; font-family: Georgia, "Times New Roman", serif; }
+
+    /* ---------- Empty ---------- */
+    .ds-empty { text-align: center; padding: 3rem 1rem; }
+    .ds-empty h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: 1.6rem; margin-bottom: .5rem; }
+    .ds-empty p { font-family: Georgia, "Times New Roman", serif; font-style: italic; color: var(--soft); margin-bottom: 1.4rem; }
+
+    /* ---------- Paging ---------- */
+    .ds-pages {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: .4rem;
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--rule);
+        font-family: Georgia, "Times New Roman", serif;
+    }
+    .ds-pages a,
+    .ds-pages span {
+        min-width: 2.2rem;
+        text-align: center;
+        padding: .3rem .5rem;
+        color: var(--soft);
+        text-decoration: none;
+        border-bottom: 1.5px solid transparent;
+    }
+    .ds-pages a:hover { color: var(--ink); border-bottom-color: var(--rule); }
+    .ds-pages .on { color: var(--ink); border-bottom-color: var(--ink); }
+    .ds-pages .off { color: #c9bfb3; }
+
+    @@media (max-width: 640px) {
+        .ds-title { font-size: 2.2rem; }
+        .ds-input { font-size: 1.2rem; }
+        .ds-frow { grid-template-columns: 1fr; gap: .4rem; }
+        .ds-books { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 1.2rem; }
+    }
+</style>
+
+<div class="ds">
+
+    <div class="ds-eyebrow">Discover</div>
+    <h1 class="ds-title">Find your next <i>book</i></h1>
+    <hr class="ds-rule" />
+
+    <!-- Arama -->
+    <form method="get" class="ds-search" role="search">
+        @foreach (var kv in Model.Rota(("q", null)))
+        {
+            <input type="hidden" name="@kv.Key" value="@kv.Value" />
+        }
+        <div class="ds-search-field">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
+            <input type="search" name="q" value="@Model.Q" class="ds-input"
+                   placeholder="Search by title or author" aria-label="Search by title or author"
+                   maxlength="100" autocomplete="off" />
+        </div>
+        <button type="submit" class="ds-btn">Search</button>
+    </form>
+
+    <!-- Filtreler -->
+    <div class="ds-filters">
+        <div class="ds-frow">
+            <div class="ds-flabel">Category</div>
+            <nav class="ds-opts" aria-label="Category">
+                <a class="ds-opt @(Model.Category == null ? "on" : "")" asp-page="/Discover" asp-all-route-data="@Model.Rota(("category", null))">
+                    All <span class="n">@toplamKategori</span>
+                </a>
+                @foreach (var k in Model.Kategoriler)
+                {
+                    <a class="ds-opt @(Model.Category == k.Ad ? "on" : "")" asp-page="/Discover" asp-all-route-data="@Model.Rota(("category", k.Ad))">
+                        @k.Ad <span class="n">@k.Sayi</span>
+                    </a>
+                }
+            </nav>
+        </div>
+
+        <div class="ds-frow">
+            <div class="ds-flabel">Published</div>
+            <nav class="ds-opts" aria-label="Published">
+                <a class="ds-opt @(Model.Era == null ? "on" : "")" asp-page="/Discover" asp-all-route-data="@Model.Rota(("era", null))">Any time</a>
+                @foreach (var d in DiscoverModel.Donemler)
+                {
+                    var sayi = Model.DonemSayilari[d.Kod];
+                    if (sayi == 0 && Model.Era != d.Kod) continue; // boş dönemler gösterilmez
+                    <a class="ds-opt @(Model.Era == d.Kod ? "on" : "")" asp-page="/Discover" asp-all-route-data="@Model.Rota(("era", d.Kod))">
+                        @d.Ad <span class="n">@sayi</span>
+                    </a>
+                }
+            </nav>
+        </div>
+
+        <div class="ds-frow">
+            <div class="ds-flabel">Rating</div>
+            <nav class="ds-opts" aria-label="Rating">
+                <a class="ds-opt @(Model.Rating == null ? "on" : "")" asp-page="/Discover" asp-all-route-data="@Model.Rota(("rating", null))">Any rating</a>
+                @foreach (var p in DiscoverModel.Puanlar)
+                {
+                    var sayi = Model.PuanSayilari[p.Kod];
+                    <a class="ds-opt @(Model.Rating == p.Kod ? "on" : "") @(sayi == 0 && Model.Rating != p.Kod ? "empty" : "")"
+                       asp-page="/Discover" asp-all-route-data="@Model.Rota(("rating", p.Kod))">
+                        <span class="st">★</span> @p.Ad <span class="n">@sayi</span>
+                    </a>
+                }
+            </nav>
+        </div>
+
+        <div class="ds-frow">
+            <div class="ds-flabel">My shelves</div>
+            <nav class="ds-opts" aria-label="My shelves">
+                @if (Model.GirisYapti)
+                {
+                    <a class="ds-opt @(Model.Shelf == null ? "on" : "")" asp-page="/Discover" asp-all-route-data="@Model.Rota(("shelf", null))">All books</a>
+                    @foreach (var r in DiscoverModel.RafFiltreleri)
+                    {
+                        <a class="ds-opt @(Model.Shelf == r.Kod ? "on" : "")" asp-page="/Discover" asp-all-route-data="@Model.Rota(("shelf", r.Kod))">
+                            @r.Ad <span class="n">@Model.RafSayilari[r.Kod]</span>
+                        </a>
+                    }
+                }
+                else
+                {
+                    <a class="ds-opt login" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@($"{Request.Path}{Request.QueryString}")">
+                        Sign in to filter by your shelves
+                    </a>
+                }
+            </nav>
+        </div>
+    </div>
+
+    <!-- Sonuç sayısı + sıralama -->
+    <div class="ds-head">
+        <p class="ds-summary">
+            <strong>@Model.ToplamSonuc</strong> @Cogul(Model.ToplamSonuc, "book")
+            @if (Model.Q != null)
+            {
+                <text> matching “@Model.Q”</text>
+            }
+            @if (Model.FiltreVar)
+            {
+                <a class="ds-clear" asp-page="/Discover">Clear filters</a>
+            }
+        </p>
+
+        @if (Model.ToplamSonuc > 1)
+        {
+            <form method="get" class="ds-sort">
+                @foreach (var kv in Model.Rota(("sort", null)))
+                {
+                    <input type="hidden" name="@kv.Key" value="@kv.Value" />
+                }
+                <label for="ds-sort">Sort</label>
+                <select id="ds-sort" name="sort" onchange="this.form.submit()">
+                    @foreach (var s in DiscoverModel.Siralamalar)
+                    {
+                        <option value="@s.Kod" selected="@(Model.Sort == s.Kod)">@s.Ad</option>
+                    }
+                </select>
+                <noscript><button type="submit" class="ds-btn">Apply</button></noscript>
+            </form>
+        }
+    </div>
+
+    @if (Model.ToplamSonuc == 0)
+    {
+        <div class="ds-empty">
+            <h2>No books found</h2>
+            @if (Model.FiltreVar)
+            {
+                <p>Nothing matches these filters. Try a different word or remove a filter.</p>
+                <a class="ds-clear" asp-page="/Discover">Clear filters</a>
+            }
+            else
+            {
+                <p>There are no books here yet.</p>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="ds-books">
+            @foreach (var b in Model.Kitaplar)
+            {
+                <a class="ds-book" asp-page="/Books/Details" asp-route-id="@b.Id">
+                    @if (b.MyShelf != null && Raflar.GecerliMi(b.MyShelf))
+                    {
+                        <span class="mine">@Raflar.AdiNe(b.MyShelf)</span>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(b.CoverImageUrl))
+                    {
+                        <img src="@b.CoverImageUrl" alt="@b.Title" loading="lazy" />
+                    }
+                    else
+                    {
+                        <div class="empty-cover">@b.Title</div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(b.CategoryName))
+                    {
+                        <div class="cat">@b.CategoryName</div>
+                    }
+                    <div class="t">@b.Title</div>
+                    <div class="a">@b.Author.Trim()@(b.PublishYear > 0 ? $", {b.PublishYear}" : "")</div>
+
+                    <div class="ds-rating">
+                        @if (b.RatingCount > 0)
+                        {
+                            <span class="ds-stars" aria-label="@b.AverageRating.ToString("0.0", inv) out of 5">
+                                ★★★★★<span class="fill" style="width: @((b.AverageRating / 5 * 100).ToString("0.#", inv))%">★★★★★</span>
+                            </span>
+                            <span>@b.AverageRating.ToString("0.0", inv) · @b.RatingCount</span>
+                        }
+                        else
+                        {
+                            <span class="none">No ratings yet</span>
+                        }
+                    </div>
+                </a>
+            }
+        </div>
+
+        @if (Model.ToplamSayfa > 1)
+        {
+            <nav class="ds-pages" aria-label="Pages">
+                @if (Model.Sayfa > 1)
+                {
+                    <a asp-page="/Discover" asp-all-route-data="@Model.Rota(("p", (Model.Sayfa - 1).ToString()))">&larr;</a>
+                }
+                else
+                {
+                    <span class="off">&larr;</span>
+                }
+
+                @for (var i = 1; i <= Model.ToplamSayfa; i++)
+                {
+                    if (i == Model.Sayfa)
+                    {
+                        <span class="on" aria-current="page">@i</span>
+                    }
+                    else
+                    {
+                        <a asp-page="/Discover" asp-all-route-data="@Model.Rota(("p", i.ToString()))">@i</a>
+                    }
+                }
+
+                @if (Model.Sayfa < Model.ToplamSayfa)
+                {
+                    <a asp-page="/Discover" asp-all-route-data="@Model.Rota(("p", (Model.Sayfa + 1).ToString()))">&rarr;</a>
+                }
+                else
+                {
+                    <span class="off">&rarr;</span>
+                }
+            </nav>
+        }
+    }
+</div>

@@ -1,0 +1,31 @@
+@{
+    // Admin sayfalarının üstündeki sekmeler. Açık olan sayfanın sekmesi yeşil görünür.
+    var aktif = ViewContext.RouteData.Values["page"]?.ToString();
+    var sekmeler = new (string Sayfa, string Ad)[]
+    {
+        ("/Admin/Books", "Books"),
+        ("/Admin/Reviews", "Reviews")
+    };
+}
+
+<style>
+    .admin-nav { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.5rem; }
+    .admin-nav a {
+        border: 1px solid #D8D8D8;
+        background: #fff;
+        color: #382110;
+        border-radius: 999px;
+        padding: .3rem 1rem;
+        font-size: .9rem;
+        text-decoration: none;
+    }
+    .admin-nav a:hover { border-color: #00635D; color: #382110; }
+    .admin-nav a.on { background: #00635D; border-color: #00635D; color: #fff; font-weight: 600; }
+</style>
+
+<nav class="admin-nav">
+    @foreach (var s in sekmeler)
+    {
+        <a href="@s.Sayfa" class="@(aktif == s.Sayfa ? "on" : "")">@s.Ad</a>
+    }
+</nav>

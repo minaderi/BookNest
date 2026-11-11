@@ -120,6 +120,8 @@
     <h1 class="admin-title">Admin · Books</h1>
     <div class="admin-sub">@Model.ToplamKitap books in the library</div>
 
+    <partial name="_AdminNav" />
+
     @if (!string.IsNullOrEmpty(Model.Mesaj))
     {
         <div class="admin-msg">@Model.Mesaj</div>

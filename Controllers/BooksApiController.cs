@@ -113,6 +113,49 @@ namespace BookNest.Controllers.Api
 
             return CreatedAtAction(nameof(Get), new { id = book.Id }, dto);
         }
+                // ---------------- KAPAK RESİMLERİ ----------------
+
+        private static readonly HttpClient _http = new();
+
+        // Sadece kitap kapağı sitelerine izin ver (başka adresler için kullanılamasın)
+        private static readonly string[] _izinliSiteler =
+        {
+            "books.google.com",
+            "books.googleusercontent.com",
+            "covers.openlibrary.org",
+            "archive.org"
+        };
+
+        // GET /api/books/cover?url=... -> kapak resmini web üzerinden verir.
+        // Chrome'da Google Books resimleri Flutter'a doğrudan verilmiyor (CORS),
+        // bu yüzden resmi web indirip uygulamaya iletiyor.
+        [HttpGet("cover")]
+        public async Task<IActionResult> Cover([FromQuery] string url)
+        {
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var adres) ||
+                (adres.Scheme != Uri.UriSchemeHttps && adres.Scheme != Uri.UriSchemeHttp) ||
+                !_izinliSiteler.Any(s => adres.Host == s || adres.Host.EndsWith("." + s)))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                using var cevap = await _http.GetAsync(adres);
+                if (!cevap.IsSuccessStatusCode) return NotFound();
+
+                var tur = cevap.Content.Headers.ContentType?.MediaType ?? "image/jpeg";
+                if (!tur.StartsWith("image/")) return NotFound();
+
+                var resim = await cevap.Content.ReadAsByteArrayAsync();
+                Response.Headers.CacheControl = "public, max-age=86400"; // 1 gün önbellek
+                return File(resim, tur);
+            }
+            catch (HttpRequestException)
+            {
+                return NotFound();
+            }
+        }
 
         private static string Truncate(string value, int max)
             => value.Length <= max ? value : value.Substring(0, max);

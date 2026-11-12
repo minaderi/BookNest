@@ -1,0 +1,190 @@
+@page
+@model BookNest.Pages.Admin.BooksModel
+
+@{
+    ViewData["Title"] = "Admin · Books";
+}
+
+<style>
+    .admin-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 1.5rem 0 3rem;
+    }
+
+    .admin-title {
+        font-family: var(--font-serif);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--brown-dark);
+        margin-bottom: .25rem;
+    }
+
+    .admin-sub { color: var(--muted); margin-bottom: 1.5rem; }
+
+    .admin-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .6rem;
+        align-items: center;
+        margin-bottom: 1.25rem;
+    }
+
+    .admin-toolbar input {
+        flex: 1 1 260px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: .45rem .8rem;
+        font-size: .95rem;
+    }
+    .admin-toolbar input:focus { outline: none; border-color: var(--green); }
+
+    .admin-btn {
+        background: var(--action);
+        color: #fff;
+        border: 0;
+        border-radius: var(--radius);
+        padding: .45rem 1.1rem;
+        font-size: .9rem;
+        text-decoration: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .admin-btn:hover { background: var(--action-dark); color: #fff; }
+
+    .admin-btn.ghost {
+        background: #fff;
+        color: var(--brown-dark);
+        border: 1px solid var(--line);
+    }
+    .admin-btn.ghost:hover { border-color: var(--green); color: var(--brown-dark); }
+
+    .admin-msg {
+        background: #e8f3f2;
+        border: 1px solid #b9dcd9;
+        color: var(--green);
+        border-radius: var(--radius);
+        padding: .6rem .9rem;
+        margin-bottom: 1rem;
+    }
+
+    .admin-table { width: 100%; border-collapse: collapse; background: #fff; }
+    .admin-table th {
+        text-align: left;
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        color: var(--muted);
+        border-bottom: 2px solid var(--line);
+        padding: .6rem .7rem;
+    }
+    .admin-table td {
+        border-bottom: 1px solid var(--line);
+        padding: .6rem .7rem;
+        vertical-align: middle;
+        font-size: .92rem;
+    }
+
+    .admin-cover {
+        width: 40px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px rgba(56, 33, 16, .2);
+    }
+    .admin-cover.empty { background: #f1f1f1; display: inline-block; }
+
+    .admin-book-title { font-weight: 700; color: var(--brown-dark); text-decoration: none; }
+    .admin-book-title:hover { text-decoration: underline; color: var(--brown-dark); }
+    .admin-muted { color: var(--muted); font-size: .85rem; }
+
+    .admin-delete {
+        background: none;
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        border-radius: var(--radius);
+        padding: .25rem .8rem;
+        font-size: .85rem;
+        cursor: pointer;
+    }
+    .admin-delete:hover { background: var(--danger); color: #fff; }
+
+    .admin-empty { text-align: center; color: var(--muted); padding: 2.5rem 1rem; }
+</style>
+
+<div class="admin-page">
+
+    <h1 class="admin-title">Admin · Books</h1>
+    <div class="admin-sub">@Model.ToplamKitap books in the library</div>
+
+    <partial name="_AdminNav" />
+
+    @if (!string.IsNullOrEmpty(Model.Mesaj))
+    {
+        <div class="admin-msg">@Model.Mesaj</div>
+    }
+
+    <form method="get" class="admin-toolbar">
+        <input type="text" name="Q" value="@Model.Q" placeholder="Search by title or author..." />
+        <button type="submit" class="admin-btn">Search</button>
+        @if (!string.IsNullOrWhiteSpace(Model.Q))
+        {
+            <a class="admin-btn ghost" asp-page="/Admin/Books">Clear</a>
+        }
+        <a class="admin-btn ghost" asp-page="/Books/Import">Import from Google Books</a>
+    </form>
+
+    @if (!Model.Kitaplar.Any())
+    {
+        <div class="admin-empty">No books found.</div>
+    }
+    else
+    {
+        <div style="overflow-x:auto">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Book</th>
+                        <th>Category</th>
+                        <th>Year</th>
+                        <th>Ratings</th>
+                        <th>Reviews</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var k in Model.Kitaplar)
+                    {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(k.CoverImageUrl))
+                                {
+                                    <img src="@k.CoverImageUrl" class="admin-cover" alt="" />
+                                }
+                                else
+                                {
+                                    <span class="admin-cover empty"></span>
+                                }
+                            </td>
+                            <td>
+                                <a class="admin-book-title" asp-page="/Books/Details" asp-route-id="@k.Id">@k.Title</a>
+                                <div class="admin-muted">@k.Author</div>
+                            </td>
+                            <td>@k.Category</td>
+                            <td>@(k.PublishYear > 0 ? k.PublishYear.ToString() : "-")</td>
+                            <td>@k.PuanSayisi</td>
+                            <td>@k.YorumSayisi</td>
+                            <td style="text-align:right">
+                                <form method="post" asp-page-handler="Delete" asp-route-id="@k.Id" asp-route-q="@Model.Q"
+                                      onsubmit="return confirm('Delete this book? All of its ratings, reviews, likes, replies and shelf entries will also be deleted. This cannot be undone.');">
+                                    <button type="submit" class="admin-delete">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

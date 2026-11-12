@@ -33,6 +33,11 @@ namespace BookNest.Data
             var eklenen = await KitapDosyasi.YukleAsync(db, env.ContentRootPath);
             if (eklenen > 0)
                 log.LogInformation("kitaplar.json'dan {Sayi} kitap eklendi.", eklenen);
+
+            // 5) Admin'in sildiği kitaplar (Data/silinen-kitaplar.json): ekipte herkeste silinsin
+            var silinen = await SilinenKitaplar.UygulaAsync(db, env.ContentRootPath);
+            if (silinen > 0)
+                log.LogInformation("silinen-kitaplar.json'a göre {Sayi} kitap silindi.", silinen);
         }
 
         private static async Task AdminHesabiniHazirlaAsync(

@@ -1,0 +1,187 @@
+@page
+@model BookNest.Pages.ForYouModel
+
+@{
+    ViewData["Title"] = "For You";
+    var inv = System.Globalization.CultureInfo.InvariantCulture;
+
+    // Sayfadaki bölümler: başlık, açıklama, kitaplar
+    var bolumler = new List<(string Baslik, string Aciklama, List<BookNest.Pages.ForYouModel.Oneri> Kitaplar)>
+    {
+        ("From authors and genres you love", "Picked from the books you rated 4–5 stars or added to your favorites.", Model.YazarKategori),
+        ("Readers like you also loved", "Readers who liked the same books as you rated these highly.", Model.BenzerOkuyucular),
+        ("Highly rated on BookNest", "The best-rated books you haven't read yet.", Model.Populer)
+    };
+}
+
+<style>
+    .fy {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 1.5rem 0 3rem;
+    }
+
+    .fy-title {
+        font-family: var(--font-serif);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--brown-dark);
+        margin-bottom: .25rem;
+    }
+
+    .fy-sub { color: var(--muted); margin-bottom: 1.75rem; }
+
+    .fy-hint {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-lg);
+        padding: 1rem 1.2rem;
+        margin-bottom: 2rem;
+        color: var(--soft);
+    }
+    .fy-hint strong { color: var(--brown-dark); }
+
+    .fy-section { margin-bottom: 2.75rem; }
+
+    .fy-section-title {
+        font-family: var(--font-serif);
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--brown-dark);
+        border-bottom: 1px solid var(--line);
+        padding-bottom: .4rem;
+        margin-bottom: .35rem;
+    }
+
+    .fy-section-desc { font-size: .9rem; color: var(--muted); margin-bottom: 1.25rem; }
+
+    .fy-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1.75rem 1.5rem;
+    }
+
+    .fy-book {
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+    }
+    .fy-book:hover { color: inherit; }
+
+    .fy-book img,
+    .fy-book .empty-cover {
+        width: 100%;
+        aspect-ratio: 2 / 3;
+        object-fit: cover;
+        border-radius: var(--radius);
+        box-shadow: 0 4px 12px rgba(56, 33, 16, .22);
+        transition: transform .15s ease;
+    }
+
+    .fy-book .empty-cover {
+        background: #fff;
+        border: 1px dashed var(--line);
+        box-shadow: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: .75rem;
+        text-align: center;
+        color: var(--muted);
+        font-family: var(--font-serif);
+        font-size: .9rem;
+    }
+
+    .fy-book:hover img,
+    .fy-book:hover .empty-cover { transform: translateY(-4px); }
+
+    .fy-book .t {
+        font-family: var(--font-serif);
+        font-weight: 700;
+        color: var(--brown-dark);
+        font-size: .95rem;
+        line-height: 1.25;
+        margin-top: .65rem;
+    }
+
+    .fy-book .a { font-size: .82rem; color: var(--muted); }
+
+    .fy-rating { display: flex; align-items: center; gap: .35rem; margin-top: .3rem; font-size: .75rem; color: var(--muted); }
+    .fy-stars { position: relative; display: inline-block; font-size: .85rem; line-height: 1; letter-spacing: 1px; color: var(--star-off); }
+    .fy-stars .fill { position: absolute; inset: 0 auto 0 0; overflow: hidden; white-space: nowrap; color: var(--star); }
+
+    .fy-why {
+        margin-top: .4rem;
+        font-size: .78rem;
+        line-height: 1.35;
+        color: var(--green);
+    }
+
+    .fy-empty {
+        text-align: center;
+        color: var(--muted);
+        padding: 3rem 1rem;
+    }
+</style>
+
+<div class="fy">
+    <h1 class="fy-title">For You</h1>
+    <p class="fy-sub">Book recommendations based on what you read and rate.</p>
+
+    @if (Model.SevilenSayisi == 0)
+    {
+        <div class="fy-hint">
+            <strong>Rate a few books to get personal picks.</strong>
+            Give 4 or 5 stars to books you enjoyed, or add them to your favorites, and your recommendations will show up here.
+            Until then, here are the best-rated books on BookNest.
+        </div>
+    }
+
+    @if (!bolumler.Any(b => b.Kitaplar.Any()))
+    {
+        <div class="fy-empty">
+            <p>There's nothing to recommend yet. You already have every book on your shelves!</p>
+            <a asp-page="/Books/Import">Add more books &rarr;</a>
+        </div>
+    }
+
+    @foreach (var bolum in bolumler.Where(b => b.Kitaplar.Any()))
+    {
+        <section class="fy-section">
+            <h2 class="fy-section-title">@bolum.Baslik</h2>
+            <p class="fy-section-desc">@bolum.Aciklama</p>
+
+            <div class="fy-grid">
+                @foreach (var o in bolum.Kitaplar)
+                {
+                    <a class="fy-book" asp-page="/Books/Details" asp-route-id="@o.Kitap.Id">
+                        @if (!string.IsNullOrWhiteSpace(o.Kitap.CoverImageUrl))
+                        {
+                            <img src="@o.Kitap.CoverImageUrl" alt="@o.Kitap.Title" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="empty-cover">@o.Kitap.Title</div>
+                        }
+
+                        <div class="t">@o.Kitap.Title</div>
+                        <div class="a">@o.Kitap.Author</div>
+
+                        @if (o.PuanSayisi > 0)
+                        {
+                            <div class="fy-rating">
+                                <span class="fy-stars" aria-label="@o.Ortalama.ToString("0.0", inv) out of 5">
+                                    ★★★★★<span class="fill" style="width: @((o.Ortalama / 5 * 100).ToString("0", inv))%">★★★★★</span>
+                                </span>
+                                @o.Ortalama.ToString("0.0", inv)
+                            </div>
+                        }
+
+                        <div class="fy-why">@o.Neden</div>
+                    </a>
+                }
+            </div>
+        </section>
+    }
+</div>

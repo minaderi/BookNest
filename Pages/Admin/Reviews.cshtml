@@ -1,0 +1,187 @@
+@page
+@model BookNest.Pages.Admin.ReviewsModel
+
+@{
+    ViewData["Title"] = "Admin · Reviews";
+}
+
+<style>
+    .admin-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 1.5rem 0 3rem;
+    }
+
+    .admin-title {
+        font-family: var(--font-serif);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--brown-dark);
+        margin-bottom: .25rem;
+    }
+
+    .admin-sub { color: var(--muted); margin-bottom: 1rem; }
+
+    .admin-toolbar { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.25rem; }
+    .admin-toolbar input {
+        flex: 1 1 260px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: .45rem .8rem;
+        font-size: .95rem;
+    }
+    .admin-toolbar input:focus { outline: none; border-color: var(--green); }
+
+    .admin-btn {
+        background: var(--action);
+        color: #fff;
+        border: 0;
+        border-radius: var(--radius);
+        padding: .45rem 1.1rem;
+        font-size: .9rem;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .admin-btn:hover { background: var(--action-dark); color: #fff; }
+    .admin-btn.ghost { background: #fff; color: var(--brown-dark); border: 1px solid var(--line); }
+    .admin-btn.ghost:hover { border-color: var(--green); }
+
+    .admin-msg {
+        background: #e8f3f2;
+        border: 1px solid #b9dcd9;
+        color: var(--green);
+        border-radius: var(--radius);
+        padding: .6rem .9rem;
+        margin-bottom: 1rem;
+    }
+
+    .mod-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 1rem 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .mod-head { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-bottom: .4rem; }
+    .mod-user { font-weight: 700; color: var(--brown-dark); }
+    .mod-book { color: var(--green); text-decoration: none; font-size: .9rem; }
+    .mod-book:hover { text-decoration: underline; }
+    .mod-meta { color: var(--muted); font-size: .82rem; }
+    .mod-stars { color: var(--star); letter-spacing: 1px; font-size: .9rem; }
+    .mod-stars .off { color: var(--star-off); }
+
+    .mod-text {
+        font-family: var(--font-serif);
+        color: var(--text);
+        line-height: 1.6;
+        white-space: pre-line;
+    }
+
+    .mod-remove {
+        margin-left: auto;
+        background: none;
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        border-radius: var(--radius);
+        padding: .2rem .75rem;
+        font-size: .8rem;
+        cursor: pointer;
+    }
+    .mod-remove:hover { background: var(--danger); color: #fff; }
+
+    .mod-replies {
+        margin: .8rem 0 0 1rem;
+        padding-left: 1rem;
+        border-left: 2px solid var(--line);
+    }
+    .mod-reply { padding: .45rem 0; }
+    .mod-reply .mod-head { margin-bottom: .2rem; }
+    .mod-reply .mod-text { font-size: .93rem; }
+
+    .admin-empty { text-align: center; color: var(--muted); padding: 2.5rem 1rem; }
+</style>
+
+<div class="admin-page">
+
+    <h1 class="admin-title">Admin · Reviews</h1>
+    <div class="admin-sub">@Model.ToplamYorum reviews · @Model.ToplamYanit replies</div>
+
+    <partial name="_AdminNav" />
+
+    @if (!string.IsNullOrEmpty(Model.Mesaj))
+    {
+        <div class="admin-msg">@Model.Mesaj</div>
+    }
+
+    <form method="get" class="admin-toolbar">
+        <input type="text" name="Q" value="@Model.Q" placeholder="Search reviews, replies, users or books..." />
+        <button type="submit" class="admin-btn">Search</button>
+        @if (!string.IsNullOrWhiteSpace(Model.Q))
+        {
+            <a class="admin-btn ghost" asp-page="/Admin/Reviews">Clear</a>
+        }
+    </form>
+
+    @if (!Model.Yorumlar.Any())
+    {
+        <div class="admin-empty">No reviews found.</div>
+    }
+    else
+    {
+        if (Model.Yorumlar.Count == Model.GosterilenSinir)
+        {
+            <p class="mod-meta">Showing the latest @Model.GosterilenSinir reviews. Use search to find older ones.</p>
+        }
+
+        foreach (var y in Model.Yorumlar)
+        {
+            <div class="mod-card">
+                <div class="mod-head">
+                    <span class="mod-user">@y.Kullanici</span>
+                    <span class="mod-stars">
+                        @for (var s = 1; s <= 5; s++)
+                        {
+                            <span class="@(s <= y.Puan ? "" : "off")">&#9733;</span>
+                        }
+                    </span>
+                    <a class="mod-book" asp-page="/Books/Details" asp-route-id="@y.BookId" asp-fragment="review-@y.Id">@y.Kitap</a>
+                    <span class="mod-meta">
+                        @(y.BegeniSayisi == 1 ? "1 like" : $"{y.BegeniSayisi} likes") ·
+                        @(y.Yanitlar.Count == 1 ? "1 reply" : $"{y.Yanitlar.Count} replies")
+                    </span>
+
+                    <form method="post" asp-page-handler="RemoveReview" asp-route-q="@Model.Q" style="margin-left:auto"
+                          onsubmit="return confirm('Remove this review? Its likes and replies will also be deleted. The star rating will be kept.');">
+                        <input type="hidden" name="reviewId" value="@y.Id" />
+                        <button type="submit" class="mod-remove">Remove review</button>
+                    </form>
+                </div>
+
+                <div class="mod-text">@y.Yorum</div>
+
+                @if (y.Yanitlar.Any())
+                {
+                    <div class="mod-replies">
+                        @foreach (var r in y.Yanitlar)
+                        {
+                            <div class="mod-reply">
+                                <div class="mod-head">
+                                    <span class="mod-user">@r.Kullanici</span>
+                                    <span class="mod-meta">@r.Tarih.ToString("MMM d, yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture)</span>
+
+                                    <form method="post" asp-page-handler="RemoveReply" asp-route-q="@Model.Q" style="margin-left:auto"
+                                          onsubmit="return confirm('Remove this reply?');">
+                                        <input type="hidden" name="replyId" value="@r.Id" />
+                                        <button type="submit" class="mod-remove">Remove</button>
+                                    </form>
+                                </div>
+                                <div class="mod-text">@r.Metin</div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>

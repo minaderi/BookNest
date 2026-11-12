@@ -6,7 +6,7 @@
 
 <div class="container mt-4">
     <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold" style="color: #382110;">Welcome to BookNest</h1>
+        <h1 class="display-4 fw-bold" style="color: var(--brown-dark);">Welcome to BookNest</h1>
         <p class="lead text-muted">Organize your reading, discover new books and write reviews.</p>
     </div>
 
@@ -26,7 +26,7 @@
                             <p class="card-text text-muted mb-1">by @book.Author</p>
                             @if (book.Category != null)
                             {
-                                <span class="badge bg-secondary mb-3 align-self-start">@book.Category.Name</span>
+                                <span class="bn-tag mb-3 align-self-start">@book.Category.Name</span>
                             }
                             <a asp-page="/Books/Details" asp-route-id="@book.Id"
    class="btn btn-outline-dark mt-auto btn-sm">

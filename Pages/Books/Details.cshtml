@@ -10,9 +10,6 @@
 
 <style>
     .details-page {
-        --brown-dark: #382110;
-        --green: #00635D;
-        --line: #D8D8D8;
         max-width: 960px;
         margin: 0 auto;
         padding: 1.5rem 0 3rem;
@@ -25,7 +22,7 @@
     .details-cover {
         width: 100%;
         max-width: 260px;
-        border-radius: 6px;
+        border-radius: var(--radius);
         box-shadow: 0 6px 18px rgba(56, 33, 16, .25);
     }
 
@@ -33,18 +30,18 @@
         width: 100%;
         max-width: 260px;
         aspect-ratio: 2 / 3;
-        border-radius: 6px;
+        border-radius: var(--radius);
         background: #fff;
         border: 1px dashed var(--line);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #999;
+        color: var(--muted);
         font-size: 1rem;
     }
 
     .details-title {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-weight: 700;
         font-size: 2.3rem;
         color: var(--brown-dark);
@@ -53,9 +50,9 @@
     }
 
     .details-author {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-size: 1.25rem;
-        color: #333;
+        color: var(--text);
         margin-bottom: 1rem;
     }
 
@@ -71,7 +68,7 @@
     }
 
     .details-section-title {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-size: 1.15rem;
         font-weight: 700;
         color: var(--brown-dark);
@@ -81,42 +78,42 @@
     }
 
     .details-desc {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-size: 1.05rem;
         line-height: 1.75;
-        color: #333;
+        color: var(--text);
         white-space: pre-line;
     }
 
     .details-back {
         display: inline-block;
         margin-top: 1.5rem;
-        background: var(--green);
-        color: #fff;
-        border-radius: 6px;
+        background: transparent; border: 1px solid var(--brown-dark);
+        color: var(--brown-dark);
+        border-radius: var(--radius);
         padding: .5rem 1.4rem;
         text-decoration: none;
         font-size: .92rem;
     }
-    .details-back:hover { background: #004d48; color: #fff; }
+    .details-back:hover { background: var(--brown-dark); color: #fff; }
 
     /* Puan alanı */
     .rating-box { margin-top: 1.25rem; max-width: 260px; text-align: left; }
     .rating-avg { display: flex; align-items: center; gap: .6rem; }
 
     .rating-avg .num {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-size: 1.9rem;
         font-weight: 700;
-        color: #382110;
+        color: var(--brown-dark);
         line-height: 1;
     }
 
-    .rating-summary { font-size: .85rem; color: #777; margin-top: .25rem; }
+    .rating-summary { font-size: .85rem; color: var(--muted); margin-top: .25rem; }
 
     .star { width: 24px; height: 24px; flex: 0 0 24px; fill: currentColor; }
 
-    .stars-static { position: relative; display: inline-flex; color: #dcdcdc; }
+    .stars-static { position: relative; display: inline-flex; color: var(--star-off); }
 
     .stars-static .fill {
         position: absolute;
@@ -124,15 +121,15 @@
         top: 0;
         display: flex;
         overflow: hidden;
-        color: #f5b301;
+        color: var(--star);
     }
 
     .rate-title {
         font-size: .85rem;
-        color: #555;
+        color: var(--soft);
         margin: 1.1rem 0 .3rem;
         padding-top: .9rem;
-        border-top: 1px solid #D8D8D8;
+        border-top: 1px solid var(--line);
     }
 
     .star-input { display: inline-flex; flex-direction: row-reverse; }
@@ -141,17 +138,17 @@
         background: none;
         border: 0;
         padding: 0 1px;
-        color: #dcdcdc;
+        color: var(--star-off);
         cursor: pointer;
     }
 
     .star-input button .star { width: 30px; height: 30px; }
-    .star-input button.on { color: #f5b301; }
-    .star-input:hover button { color: #dcdcdc; }
+    .star-input button.on { color: var(--star); }
+    .star-input:hover button { color: var(--star-off); }
     .star-input button:hover,
-    .star-input button:hover ~ button { color: #f5b301; }
+    .star-input button:hover ~ button { color: var(--star); }
 
-    .rate-login { font-size: .88rem; color: #00635D; }
+    .rate-login { font-size: .88rem; color: var(--green); }
 
     /* Raf ve favori alanı */
     .shelf-box { margin-top: 1.25rem; max-width: 260px; text-align: left; }
@@ -161,21 +158,21 @@
         width: 100%;
         text-align: left;
         background: #fff;
-        border: 1px solid #D8D8D8;
-        color: #382110;
-        border-radius: 6px;
+        border: 1px solid var(--line);
+        color: var(--brown-dark);
+        border-radius: var(--radius);
         padding: .45rem .8rem;
         font-size: .92rem;
         cursor: pointer;
     }
-    .shelf-btn:hover { border-color: #00635D; }
-    .shelf-btn.on { background: #00635D; border-color: #00635D; color: #fff; font-weight: 600; }
+    .shelf-btn:hover { border-color: var(--green); }
+    .shelf-btn.on { background: var(--action); border-color: var(--action); color: #fff; font-weight: 600; }
 
     .shelf-remove {
         background: none;
         border: 0;
         padding: .2rem 0;
-        color: #888;
+        color: var(--muted);
         font-size: .82rem;
         text-decoration: underline;
         cursor: pointer;
@@ -186,23 +183,23 @@
         width: 100%;
         margin-top: .6rem;
         background: #fff;
-        border: 1px solid #D8D8D8;
-        color: #382110;
-        border-radius: 6px;
+        border: 1px solid var(--line);
+        color: var(--brown-dark);
+        border-radius: var(--radius);
         padding: .45rem .8rem;
         font-size: .92rem;
         cursor: pointer;
         text-align: left;
     }
-    .fav-btn:hover { border-color: #c0392b; }
-    .fav-btn.on { border-color: #c0392b; color: #c0392b; font-weight: 600; }
+    .fav-btn:hover { border-color: var(--danger); }
+    .fav-btn.on { border-color: var(--danger); color: var(--danger); font-weight: 600; }
 
     /* Yorumlar */
     .review-form textarea {
         width: 100%;
         min-height: 110px;
         border: 1px solid var(--line);
-        border-radius: 6px;
+        border-radius: var(--radius);
         padding: .7rem .8rem;
         font-size: .95rem;
         resize: vertical;
@@ -211,17 +208,17 @@
     .review-actions { display: flex; gap: .6rem; align-items: center; margin-top: .5rem; }
 
     .review-btn {
-        background: var(--green);
+        background: var(--action);
         color: #fff;
         border: 0;
-        border-radius: 6px;
+        border-radius: var(--radius);
         padding: .45rem 1.2rem;
         font-size: .9rem;
         cursor: pointer;
     }
-    .review-btn:hover { background: #004d48; }
+    .review-btn:hover { background: var(--action-dark); }
 
-    .review-note { font-size: .92rem; color: #777; }
+    .review-note { font-size: .92rem; color: var(--muted); }
     .review-note a { color: var(--green); }
 
     .review-list { margin-top: 1.5rem; }
@@ -234,9 +231,9 @@
     .review-head { display: flex; align-items: center; gap: .6rem; margin-bottom: .35rem; }
     .review-user { font-weight: 700; color: var(--brown-dark); }
     .review-you { font-size: .75rem; color: var(--green); border: 1px solid var(--line); border-radius: 999px; padding: 0 .5rem; }
-    .review-stars { display: inline-flex; color: #f5b301; }
+    .review-stars { display: inline-flex; color: var(--star); }
     .review-stars .star { width: 15px; height: 15px; flex: 0 0 15px; }
-    .review-stars .off { color: #dcdcdc; }
+    .review-stars .off { color: var(--star-off); }
 
     .review-tools { margin-left: auto; display: flex; gap: .8rem; }
     .review-tools button {
@@ -248,20 +245,20 @@
         cursor: pointer;
     }
     .review-tools button:hover { text-decoration: underline; }
-    .review-tools .danger { color: #c0392b; }
+    .review-tools .danger { color: var(--danger); }
 
     .review-cancel {
         background: none;
         border: 0;
-        color: #888;
+        color: var(--muted);
         font-size: .9rem;
         cursor: pointer;
     }
     .review-cancel:hover { text-decoration: underline; }
 
     .review-text {
-        font-family: Georgia, "Times New Roman", serif;
-        color: #333;
+        font-family: var(--font-serif);
+        color: var(--text);
         line-height: 1.65;
         white-space: pre-line;
     }
@@ -278,9 +275,9 @@
         cursor: pointer;
     }
     .like-btn:hover { border-color: var(--green); }
-    .like-btn.on { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+    .like-btn.on { background: var(--brown-dark); border-color: var(--brown-dark); color: #fff; font-weight: 600; }
 
-    .like-count { font-size: .82rem; color: #777; }
+    .like-count { font-size: .82rem; color: var(--muted); }
 
     /* Yanıtlar */
     .reply-list {
@@ -292,21 +289,21 @@
     .reply-item { padding: .5rem 0; }
     .reply-head { display: flex; align-items: center; gap: .6rem; }
     .reply-user { font-weight: 700; color: var(--brown-dark); font-size: .9rem; }
-    .reply-date { font-size: .78rem; color: #999; }
+    .reply-date { font-size: .78rem; color: var(--muted); }
 
     .reply-delete {
         background: none;
         border: 0;
         padding: 0;
-        color: #c0392b;
+        color: var(--danger);
         font-size: .8rem;
         cursor: pointer;
     }
     .reply-delete:hover { text-decoration: underline; }
 
     .reply-text {
-        font-family: Georgia, "Times New Roman", serif;
-        color: #333;
+        font-family: var(--font-serif);
+        color: var(--text);
         font-size: .95rem;
         line-height: 1.6;
         white-space: pre-line;
@@ -317,7 +314,7 @@
         width: 100%;
         min-height: 70px;
         border: 1px solid var(--line);
-        border-radius: 6px;
+        border-radius: var(--radius);
         padding: .5rem .7rem;
         font-size: .9rem;
         resize: vertical;

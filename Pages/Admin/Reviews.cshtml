@@ -7,45 +7,42 @@
 
 <style>
     .admin-page {
-        --brown-dark: #382110;
-        --green: #00635D;
-        --line: #D8D8D8;
         max-width: 1000px;
         margin: 0 auto;
         padding: 1.5rem 0 3rem;
     }
 
     .admin-title {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-size: 2rem;
         font-weight: 700;
         color: var(--brown-dark);
         margin-bottom: .25rem;
     }
 
-    .admin-sub { color: #777; margin-bottom: 1rem; }
+    .admin-sub { color: var(--muted); margin-bottom: 1rem; }
 
     .admin-toolbar { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.25rem; }
     .admin-toolbar input {
         flex: 1 1 260px;
         border: 1px solid var(--line);
-        border-radius: 6px;
+        border-radius: var(--radius);
         padding: .45rem .8rem;
         font-size: .95rem;
     }
     .admin-toolbar input:focus { outline: none; border-color: var(--green); }
 
     .admin-btn {
-        background: var(--green);
+        background: var(--action);
         color: #fff;
         border: 0;
-        border-radius: 6px;
+        border-radius: var(--radius);
         padding: .45rem 1.1rem;
         font-size: .9rem;
         text-decoration: none;
         cursor: pointer;
     }
-    .admin-btn:hover { background: #004d48; color: #fff; }
+    .admin-btn:hover { background: var(--action-dark); color: #fff; }
     .admin-btn.ghost { background: #fff; color: var(--brown-dark); border: 1px solid var(--line); }
     .admin-btn.ghost:hover { border-color: var(--green); }
 
@@ -53,7 +50,7 @@
         background: #e8f3f2;
         border: 1px solid #b9dcd9;
         color: var(--green);
-        border-radius: 6px;
+        border-radius: var(--radius);
         padding: .6rem .9rem;
         margin-bottom: 1rem;
     }
@@ -61,7 +58,7 @@
     .mod-card {
         background: #fff;
         border: 1px solid var(--line);
-        border-radius: 8px;
+        border-radius: var(--radius);
         padding: 1rem 1.1rem;
         margin-bottom: 1rem;
     }
@@ -70,13 +67,13 @@
     .mod-user { font-weight: 700; color: var(--brown-dark); }
     .mod-book { color: var(--green); text-decoration: none; font-size: .9rem; }
     .mod-book:hover { text-decoration: underline; }
-    .mod-meta { color: #777; font-size: .82rem; }
-    .mod-stars { color: #f5b301; letter-spacing: 1px; font-size: .9rem; }
-    .mod-stars .off { color: #dcdcdc; }
+    .mod-meta { color: var(--muted); font-size: .82rem; }
+    .mod-stars { color: var(--star); letter-spacing: 1px; font-size: .9rem; }
+    .mod-stars .off { color: var(--star-off); }
 
     .mod-text {
-        font-family: Georgia, "Times New Roman", serif;
-        color: #333;
+        font-family: var(--font-serif);
+        color: var(--text);
         line-height: 1.6;
         white-space: pre-line;
     }
@@ -84,14 +81,14 @@
     .mod-remove {
         margin-left: auto;
         background: none;
-        border: 1px solid #c0392b;
-        color: #c0392b;
-        border-radius: 6px;
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        border-radius: var(--radius);
         padding: .2rem .75rem;
         font-size: .8rem;
         cursor: pointer;
     }
-    .mod-remove:hover { background: #c0392b; color: #fff; }
+    .mod-remove:hover { background: var(--danger); color: #fff; }
 
     .mod-replies {
         margin: .8rem 0 0 1rem;
@@ -102,7 +99,7 @@
     .mod-reply .mod-head { margin-bottom: .2rem; }
     .mod-reply .mod-text { font-size: .93rem; }
 
-    .admin-empty { text-align: center; color: #777; padding: 2.5rem 1rem; }
+    .admin-empty { text-align: center; color: var(--muted); padding: 2.5rem 1rem; }
 </style>
 
 <div class="admin-page">

@@ -8,9 +8,6 @@
 
 <style>
     .welcome-page {
-        --brown-dark: #382110;
-        --green: #00635D;
-        --line: #D8D8D8;
         max-width: 1000px;
         margin: 0 auto;
         padding: 1rem 0 3rem;
@@ -25,7 +22,7 @@
     }
 
     .welcome-hero h1 {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-size: 3rem;
         font-weight: 700;
         line-height: 1.15;
@@ -35,14 +32,14 @@
 
     .welcome-hero p.lead {
         font-size: 1.15rem;
-        color: #555;
+        color: var(--soft);
         margin-bottom: 1.75rem;
     }
 
     .welcome-btn {
         display: inline-block;
         padding: .75rem 1.9rem;
-        border-radius: 999px;
+        border-radius: var(--radius);
         font-size: 1rem;
         text-decoration: none;
         margin-right: .6rem;
@@ -50,12 +47,12 @@
     }
 
     .welcome-btn.primary {
-        background: var(--green);
+        background: var(--action);
         color: #fff;
-        border: 1px solid var(--green);
+        border: 1px solid var(--action);
     }
 
-    .welcome-btn.primary:hover { background: #004d48; color: #fff; }
+    .welcome-btn.primary:hover { background: var(--action-dark); color: #fff; }
 
     .welcome-btn.ghost {
         background: transparent;
@@ -68,7 +65,7 @@
     .welcome-stats {
         margin-top: 1rem;
         font-size: .9rem;
-        color: #777;
+        color: var(--muted);
     }
 
     .welcome-stack {
@@ -89,7 +86,7 @@
         width: 100%;
         aspect-ratio: 2 / 3;
         object-fit: cover;
-        border-radius: 6px;
+        border-radius: var(--radius);
         box-shadow: 0 8px 22px rgba(56, 33, 16, .3);
         background: #fff;
     }
@@ -99,11 +96,11 @@
         align-items: center;
         justify-content: center;
         font-size: .9rem;
-        color: #999;
+        color: var(--muted);
     }
 
     .welcome-section-title {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-size: 1.6rem;
         font-weight: 700;
         color: var(--brown-dark);
@@ -133,7 +130,7 @@
     .welcome-book:hover img { transform: translateY(-4px); }
 
     .welcome-book .t {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-weight: 700;
         color: var(--brown-dark);
         margin-top: .6rem;
@@ -143,7 +140,7 @@
 
     .welcome-book .a {
         font-size: .82rem;
-        color: #777;
+        color: var(--muted);
     }
 
     .welcome-features {
@@ -156,7 +153,7 @@
     .feature-card {
         background: #fff;
         border: 1px solid var(--line);
-        border-radius: 12px;
+        border-radius: var(--radius-lg);
         padding: 1.5rem;
         text-align: center;
     }
@@ -164,37 +161,37 @@
     .feature-card .ic { font-size: 2rem; margin-bottom: .5rem; }
 
     .feature-card h3 {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-size: 1.15rem;
         font-weight: 700;
         color: var(--brown-dark);
     }
 
-    .feature-card p { font-size: .92rem; color: #666; margin-bottom: 0; }
+    .feature-card p { font-size: .92rem; color: var(--soft); margin-bottom: 0; }
 
     .soon {
         display: inline-block;
         font-size: .7rem;
-        background: #F4F1EA;
+        background: var(--cream);
         border: 1px solid var(--line);
         border-radius: 999px;
         padding: 0 .5rem;
         margin-left: .3rem;
         vertical-align: middle;
-        color: #777;
+        color: var(--muted);
     }
 
     .welcome-cta {
         text-align: center;
         background: #fff;
         border: 1px solid var(--line);
-        border-radius: 14px;
+        border-radius: var(--radius-lg);
         padding: 2.5rem 1rem;
         margin-top: 2.5rem;
     }
 
     .welcome-cta h2 {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-weight: 700;
         color: var(--brown-dark);
         margin-bottom: 1.25rem;

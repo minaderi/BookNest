@@ -21,20 +21,14 @@
 
 <style>
     .ch {
-        --ink: #382110;
-        --muted: #8a7d70;
-        --soft: #6b5d50;
-        --green: #00635D;
         --amber: #b26a00;
         --gold: #a8741a;
-        --rule: #d8cfc2;
-        --faint: #e6dfd4;
         max-width: 1000px;
         margin: 0 auto;
         padding: 1.5rem 0 4rem;
         color: var(--ink);
     }
-    .ch .serif { font-family: Georgia, "Times New Roman", serif; }
+    .ch .serif { font-family: var(--font-serif); }
 
     .ch-eyebrow {
         text-transform: uppercase;
@@ -44,19 +38,19 @@
         color: var(--green);
     }
     .ch-title {
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: 3rem;
-        font-weight: 400;
-        letter-spacing: -.01em;
+        font-family: var(--font-serif);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--brown-dark);
         margin: .3rem 0 0;
     }
     .ch-title i { color: var(--green); }
 
-    .ch-rule { border: 0; border-top: 1px solid var(--ink); opacity: 1; margin: 1.6rem 0 2.4rem; }
+    .ch-rule { border: 0; border-top: 1px solid var(--line); opacity: 1; margin: 1.25rem 0 2.4rem; }
     .ch-rule.thin { border-top-color: var(--rule); margin: 2.8rem 0 2rem; }
 
     .ch-msg {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-style: italic;
         color: var(--green);
         margin: -1rem 0 2rem;
@@ -87,9 +81,9 @@
         justify-content: center;
         text-align: center;
     }
-    .ch-ring-text .num { font-family: Georgia, "Times New Roman", serif; font-size: 3.6rem; line-height: 1; }
+    .ch-ring-text .num { font-family: var(--font-serif); font-size: 3.6rem; line-height: 1; }
     .ch-ring-text .of {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-style: italic;
         font-size: .95rem;
         color: var(--muted);
@@ -105,10 +99,10 @@
         border-bottom: 1px solid var(--faint);
     }
     .ch-item:last-of-type { border-bottom: 0; }
-    .ch-item .v { font-family: Georgia, "Times New Roman", serif; font-size: 2rem; width: 80px; flex-shrink: 0; }
-    .ch-item .l { font-family: Georgia, "Times New Roman", serif; font-style: italic; color: var(--soft); font-size: 1.05rem; }
+    .ch-item .v { font-family: var(--font-serif); font-size: 2rem; width: 80px; flex-shrink: 0; }
+    .ch-item .l { font-family: var(--font-serif); font-style: italic; color: var(--soft); font-size: 1.05rem; }
 
-    .ch-note { margin-top: 1rem; font-family: Georgia, "Times New Roman", serif; font-style: italic; }
+    .ch-note { margin-top: 1rem; font-family: var(--font-serif); font-style: italic; }
     .ch-note::before { content: "— "; }
     .ch-note.behind { color: var(--amber); }
     .ch-note.ahead { color: var(--green); }
@@ -135,50 +129,48 @@
     .ch-edit summary::-webkit-details-marker { display: none; }
     .ch-edit[open] summary { margin-bottom: 1rem; }
     .ch-textbtn.muted { color: var(--muted); }
-    .ch-textbtn.muted:hover { color: #c0392b; }
+    .ch-textbtn.muted:hover { color: var(--danger); }
 
     .ch-form {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: .7rem;
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-style: italic;
         color: var(--soft);
     }
     .ch-input {
-        width: 80px;
-        border: 0;
-        border-bottom: 1.5px solid var(--ink);
-        background: transparent;
-        padding: .15rem .3rem;
-        font-family: Georgia, "Times New Roman", serif;
+        width: 90px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        padding: .3rem .5rem;
+        font-family: var(--font-sans);
         font-style: normal;
-        font-size: 1.4rem;
+        font-size: 1.1rem;
         color: var(--ink);
         text-align: center;
     }
-    .ch-input:focus { outline: none; border-bottom-color: var(--green); }
+    .ch-input:focus { outline: none; border-color: var(--green); }
 
     .ch-btn {
-        background: var(--ink);
+        background: var(--action);
         color: #fff;
         border: none;
-        border-radius: 0;
-        padding: .5rem 1.2rem;
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        border-radius: var(--radius);
+        padding: .45rem 1.1rem;
+        font-family: var(--font-sans);
         font-style: normal;
-        font-size: .75rem;
-        text-transform: uppercase;
-        letter-spacing: .14em;
+        font-size: .9rem;
         font-weight: 700;
         transition: background .15s ease;
     }
-    .ch-btn:hover { background: var(--green); }
+    .ch-btn:hover { background: var(--action-dark); }
 
     /* ---------- Start (no goal yet) ---------- */
-    .ch-start h2 { font-family: Georgia, "Times New Roman", serif; font-size: 1.9rem; font-weight: 400; margin-bottom: .4rem; }
-    .ch-start p { font-family: Georgia, "Times New Roman", serif; font-style: italic; color: var(--soft); margin-bottom: 2rem; }
+    .ch-start h2 { font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; color: var(--brown-dark); margin-bottom: .4rem; }
+    .ch-start p { font-family: var(--font-serif); font-style: italic; color: var(--soft); margin-bottom: 2rem; }
 
     .ch-picks { display: flex; flex-wrap: wrap; gap: 0; margin-bottom: 2rem; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
     .ch-pick {
@@ -194,14 +186,14 @@
     }
     .ch-pick:last-child { border-right: 0; }
     .ch-pick:hover { background: rgba(0, 99, 93, .06); }
-    .ch-pick .n { display: block; font-family: Georgia, "Times New Roman", serif; font-size: 2.6rem; line-height: 1; }
-    .ch-pick .d { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: .9rem; color: var(--muted); }
+    .ch-pick .n { display: block; font-family: var(--font-serif); font-size: 2.6rem; line-height: 1; }
+    .ch-pick .d { font-family: var(--font-serif); font-style: italic; font-size: .9rem; color: var(--muted); }
     .ch-pick:hover .n { color: var(--green); }
 
     .ch-start-note { margin-top: 1.5rem !important; margin-bottom: 0 !important; }
 
     /* ---------- Section headings ---------- */
-    .ch-h { font-family: Georgia, "Times New Roman", serif; font-size: 1.6rem; font-weight: 400; margin: 0 0 1.5rem; }
+    .ch-h { font-family: var(--font-serif); font-size: 1.3rem; font-weight: 700; color: var(--brown-dark); margin: 0 0 1.5rem; }
     .ch-h small { font-size: 1rem; font-style: italic; color: var(--muted); }
 
     /* ---------- Monthly chart ---------- */
@@ -224,7 +216,7 @@
     .ch-books { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 2rem 1.6rem; }
     .ch-book { text-decoration: none; color: inherit; }
     .ch-book:hover { color: inherit; }
-    .ch-book .no { font-family: Georgia, "Times New Roman", serif; font-style: italic; color: var(--muted); font-size: .85rem; margin-bottom: .4rem; }
+    .ch-book .no { font-family: var(--font-serif); font-style: italic; color: var(--muted); font-size: .85rem; margin-bottom: .4rem; }
     .ch-book img,
     .ch-book .empty-cover {
         width: 100%;
@@ -239,20 +231,20 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-style: italic;
         color: var(--muted);
         font-size: .85rem;
     }
     .ch-book:hover img { transform: translateY(-4px); }
-    .ch-book .t { font-family: Georgia, "Times New Roman", serif; font-size: .95rem; margin-top: .7rem; line-height: 1.25; }
+    .ch-book .t { font-family: var(--font-serif); font-size: .95rem; margin-top: .7rem; line-height: 1.25; }
     .ch-book .d { font-size: .72rem; color: var(--muted); margin-top: .15rem; text-transform: uppercase; letter-spacing: .08em; }
 
-    .ch-empty { font-family: Georgia, "Times New Roman", serif; font-style: italic; color: var(--soft); }
-    .ch-empty a { color: var(--green); font-style: normal; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: .78rem; text-transform: uppercase; letter-spacing: .14em; font-weight: 700; text-decoration: none; border-bottom: 1px solid currentColor; }
+    .ch-empty { font-family: var(--font-serif); font-style: italic; color: var(--soft); }
+    .ch-empty a { color: var(--green); font-style: normal; font-family: var(--font-sans); font-size: .78rem; text-transform: uppercase; letter-spacing: .14em; font-weight: 700; text-decoration: none; border-bottom: 1px solid currentColor; }
 
     @@media (max-width: 640px) {
-        .ch-title { font-size: 2.2rem; }
+        .ch-title { font-size: 1.7rem; }
         .ch-row { justify-content: center; gap: 1.6rem; }
         .ch-ring { width: 180px; height: 180px; }
         .ch-ring-text .num { font-size: 3rem; }

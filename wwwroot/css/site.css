@@ -1,71 +1,169 @@
+/* =====================================================================
+   BookNest ortak tasarım (Goodreads tarzı)
+   Bütün sayfalar renkleri, fontları ve köşe ölçülerini buradan alır.
+   Bir rengi değiştirmek için sadece bu bloğu değiştirmek yeterli.
+   ===================================================================== */
+:root {
+    /* Renkler */
+    --brown-dark: #382110;   /* logo, başlıklar, seçili sekmeler */
+    --ink: #382110;          /* koyu metin (Challenge/Discover) */
+    --cream: #F4F1EA;        /* sayfa arka planı */
+    --text: #333333;         /* normal metin */
+    --soft: #555555;         /* ikincil metin */
+    --muted: #767676;        /* soluk metin, tarih, sayaç */
+    --muted-light: #B5ADA3;  /* pasif seçenek, placeholder */
+    --line: #D8D8D8;         /* çerçeve ve ayırıcı çizgiler */
+    --rule: #D8D8D8;
+    --faint: #E9E4DA;        /* çok açık ayırıcı, grafik zemini */
+    --green: #00635D;        /* linkler ve vurgu */
+    --green-dark: #004D48;
+    --action: #409D69;       /* ana butonlar (Goodreads yeşili) */
+    --action-dark: #358A5A;
+    --star: #E87400;         /* dolu yıldız */
+    --star-off: #DCDCDC;     /* boş yıldız */
+    --danger: #C0392B;       /* silme / favori */
+
+    /* Fontlar */
+    --font-serif: "Merriweather", Georgia, "Times New Roman", serif;
+    --font-sans: "Lato", "Helvetica Neue", Arial, sans-serif;
+
+    /* Köşeler */
+    --radius: 4px;
+    --radius-lg: 6px;
+}
+
+/* ===== Bootstrap'in hazır ayarları ===== */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem rgba(0, 99, 93, .45);
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+    color: var(--bs-secondary-color);
+    text-align: end;
 }
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+    text-align: start;
 }
+
+/* ===== Genel yazı ve renkler ===== */
 body {
-    background-color: #F4F1EA;
+    background-color: var(--cream);
+    font-family: var(--font-sans);
+    color: var(--text);
 }
-/* Goodreads tarzı üst menü */
+
+h1, h2, h3, h4, h5, h6, .card-title {
+    font-family: var(--font-serif);
+    color: var(--brown-dark);
+}
+
+a { color: var(--green); }
+a:hover { color: var(--green-dark); }
+
+/* ===== Üst menü ===== */
 .navbar {
-    background-color: #F4F1EA !important;
-    border-bottom: 1px solid #D8D8D8 !important;
+    background-color: var(--cream) !important;
+    border-bottom: 1px solid var(--line) !important;
     box-shadow: none !important;
     padding-top: .75rem;
     padding-bottom: .75rem;
 }
 
 .navbar-brand {
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--font-serif);
     font-size: 1.7rem;
-    font-weight: 700;
-    letter-spacing: -.5px;
-    color: #382110 !important;
+    letter-spacing: -.3px;
+    color: var(--brown-dark) !important;
 }
+.navbar-brand .brand-book { font-weight: 900; }
+.navbar-brand .brand-nest { font-weight: 400; }
 
 .navbar .nav-link {
-    color: #382110 !important;
+    color: var(--brown-dark) !important;
     font-size: .95rem;
     padding-left: .9rem;
     padding-right: .9rem;
 }
 
 .navbar .nav-link:hover {
-    color: #00635D !important;
+    color: var(--green) !important;
     text-decoration: underline;
 }
+
 .navbar .user-name {
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .navbar .logout-btn {
     background: none;
     border: 0;
     cursor: pointer;
+}
+
+/* ===== Kartlar (ana sayfa) ===== */
+.card {
+    border: 1px solid var(--line) !important;
+    border-radius: var(--radius-lg);
+    box-shadow: none !important;
+}
+
+/* ===== Bootstrap butonları (giriş/kayıt sayfaları dahil) ===== */
+.btn { border-radius: var(--radius); }
+
+.btn-primary, .btn-success {
+    background-color: var(--action);
+    border-color: var(--action);
+    color: #fff;
+}
+.btn-primary:hover, .btn-primary:focus, .btn-success:hover, .btn-success:focus {
+    background-color: var(--action-dark);
+    border-color: var(--action-dark);
+    color: #fff;
+}
+
+.btn-outline-dark {
+    color: var(--brown-dark);
+    border-color: var(--brown-dark);
+}
+.btn-outline-dark:hover {
+    background-color: var(--brown-dark);
+    border-color: var(--brown-dark);
+    color: #fff;
+}
+
+/* ===== Etiket (kategori vb.) ===== */
+.bn-tag {
+    display: inline-block;
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--brown-dark);
+    border-radius: 999px;
+    padding: .15rem .75rem;
+    font-size: .8rem;
+}
+
+/* ===== Alt bilgi ===== */
+.footer {
+    background-color: var(--cream);
+    border-top-color: var(--line) !important;
 }

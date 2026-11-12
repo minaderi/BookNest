@@ -8,16 +8,13 @@
 
 <style>
     .mybooks-page {
-        --brown-dark: #382110;
-        --green: #00635D;
-        --line: #D8D8D8;
         max-width: 1000px;
         margin: 0 auto;
         padding: 1.5rem 0 3rem;
     }
 
     .mybooks-title {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-size: 2rem;
         font-weight: 700;
         color: var(--brown-dark);
@@ -44,7 +41,7 @@
         white-space: nowrap;
     }
     .mybooks-tab:hover { border-color: var(--green); color: var(--brown-dark); }
-    .mybooks-tab.on { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+    .mybooks-tab.on { background: var(--brown-dark); border-color: var(--brown-dark); color: #fff; font-weight: 600; }
     .mybooks-tab .count { opacity: .75; margin-left: .25rem; }
 
     .mybooks-grid {
@@ -76,7 +73,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #999;
+        color: var(--muted);
         font-size: .85rem;
     }
 
@@ -86,7 +83,7 @@
         position: absolute;
         top: 6px;
         right: 6px;
-        background: #c0392b;
+        background: var(--danger);
         color: #fff;
         border-radius: 999px;
         padding: .1rem .55rem;
@@ -95,7 +92,7 @@
     }
 
     .mybook .t {
-        font-family: Georgia, "Times New Roman", serif;
+        font-family: var(--font-serif);
         font-weight: 700;
         color: var(--brown-dark);
         margin-top: .6rem;
@@ -103,7 +100,7 @@
         line-height: 1.25;
     }
 
-    .mybook .a { font-size: .82rem; color: #777; }
+    .mybook .a { font-size: .82rem; color: var(--muted); }
 
     .mybook .shelf {
         display: inline-block;
@@ -118,7 +115,7 @@
 
     .mybooks-empty {
         text-align: center;
-        color: #777;
+        color: var(--muted);
         padding: 3rem 1rem;
     }
     .mybooks-empty a { color: var(--green); }
